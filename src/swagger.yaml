@@ -1,0 +1,64 @@
+openapi: 3.0.3
+info:
+  title: Escambooks API
+  description: Swagger documentation of Escambooks API
+  contact:
+    email: matheus.oliveira0730@gmail.com
+  version: 1.0.11
+servers:
+  - url: http://localhost:8000/api
+tags:
+  - name: health-check
+    description: Check health of application
+    externalDocs:
+      description: Url from health-check
+      url: http://localhost:8000/api/health-check
+  - name: auth
+    description: Authentication
+    externalDocs:
+      description: Url from auth
+      url: http://localhost:8000/api/auth
+paths:
+  /health-check:
+    get:
+      summary:  Check health of application
+      description: Check health of application
+      tags:
+        - health-check
+      responses:
+        200:
+          description: Health of application is ok
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Server is ok
+  /auth:
+    post:
+      summary: Authentication
+      description: Authentication
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthPostBody"
+      responses:
+        200:
+          description: Ok
+components:
+  schemas:
+    AuthPostBody:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+        password:
+          type: string
