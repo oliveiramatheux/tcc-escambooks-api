@@ -5,14 +5,15 @@ import {
   createBook,
   deleteBookById,
   getBooksByUserId,
-  updateBookById
+  updateBookById,
+  getAllBooks
 } from '../repositories'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
 
 const formatBookResponse = ({
   _id, userId, title, authors, publisher, publishedDate, description, pageCount, categories,
-  imageLinks, language, previewLink
+  imageLinks, language, previewLink, createdAt
 }: IBookResponse) => ({
   id: _id,
   userId,
@@ -25,7 +26,8 @@ const formatBookResponse = ({
   categories,
   imageLink: imageLinks.thumbnail,
   language,
-  previewLink
+  previewLink,
+  createdAt
 })
 
 const formatBooksResponse = (books: IBookResponse[]) => {
@@ -45,7 +47,8 @@ const formatBooksResponse = (books: IBookResponse[]) => {
             categories: book.categories,
             imageLink: book.imageLinks.thumbnail,
             language: book.language,
-            previewLink: book.previewLink
+            previewLink: book.previewLink,
+            date: book.createdAt
           })
         }),
       totalItems: books.length
@@ -104,6 +107,16 @@ const getBooksByUserIdService = async (userId: string) => {
   return formatBooksResponse(bookResponse)
 }
 
+const getAllBooksService = async () => {
+  const bookResponse = await getAllBooks()
+
+  if (!bookResponse.length) {
+    throw handleError(404, 'Not have any books')
+  }
+
+  return formatBooksResponse(bookResponse)
+}
+
 const createBookService = async (newBook: INewBook) => {
   const newBookResponse = await createBook(newBook)
 
@@ -150,5 +163,6 @@ export {
   createBookService,
   deleteBookByIdService,
   getBooksByUserIdService,
-  updateBookByIdService
+  updateBookByIdService,
+  getAllBooksService
 }

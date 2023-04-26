@@ -14,6 +14,8 @@ router.use(verifyToken)
 
 router.get('/isbn/:isbn', validateParamsGetInfoBookByIsbn, booksController.getInfoBookByIsbnController)
 
+router.get('/list', verifyToken, booksController.getAllBooksController)
+
 router.get('/:id', validateParamsGetBookById, booksController.getBookByIdController)
 
 router.post('/', validateParamsCreateBook, booksController.createBookController)

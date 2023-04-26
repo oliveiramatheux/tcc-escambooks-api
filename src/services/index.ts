@@ -21,7 +21,8 @@ import {
   createBookService,
   deleteBookByIdService,
   getBooksByUserIdService,
-  updateBookByIdService
+  updateBookByIdService,
+  getAllBooksService
 } from './books'
 
 export {
@@ -41,5 +42,6 @@ export {
   authSendEmailVerifyService,
   authSendPasswordResetService,
   authResetPasswordTokenService,
-  authResetPasswordService
+  authResetPasswordService,
+  getAllBooksService
 }

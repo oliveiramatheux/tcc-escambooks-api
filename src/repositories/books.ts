@@ -31,6 +31,11 @@ const getBooksByUserId = async (userId: string) => {
   return book
 }
 
+const getAllBooks = async () => {
+  const books = await Book.find({}, null, { sort: { createdAt: 'desc' } }) as IBookResponse[]
+  return books
+}
+
 const updateBookById = async (id: string, newBook: IUpdateBook) => {
   const book = await Book.findOneAndUpdate({ _id: id }, newBook, {
     new: true
@@ -44,5 +49,6 @@ export {
   createBook,
   deleteBookById,
   getBooksByUserId,
+  getAllBooks,
   updateBookById
 }

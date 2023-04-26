@@ -46,6 +46,7 @@ export interface IBookResponse {
   },
   language: string,
   previewLink?: string,
+  createdAt?: string
 }
 
 export interface IBookExternalApiResponse {

@@ -17,6 +17,7 @@ import {
   createBook,
   deleteBookById,
   getBooksByUserId,
+  getAllBooks,
   updateBookById
 } from './books'
 
@@ -32,6 +33,7 @@ export {
   createBook,
   deleteBookById,
   getBooksByUserId,
+  getAllBooks,
   updateBookById,
   sendEmail
 }
