@@ -7,7 +7,8 @@ const {
   APP_TOKEN_SECRET,
   APP_KEY_GOOGLE_BOOKS_API,
   APP_KEY_SENDGRID_API,
-  APP_FRONT_URL
+  APP_FRONT_URL,
+  APP_EMAIL_SENDER_PASS
 } = process.env
 
 export default {
@@ -19,5 +20,6 @@ export default {
   applicationTokenSecret: APP_TOKEN_SECRET,
   applicationKeyGoogleBooksApi: APP_KEY_GOOGLE_BOOKS_API,
   applicationKeySendGridApi: APP_KEY_SENDGRID_API,
-  applicationFrontUrl: APP_FRONT_URL
+  applicationFrontUrl: APP_FRONT_URL,
+  applicationEmailSenderPass: APP_EMAIL_SENDER_PASS
 }

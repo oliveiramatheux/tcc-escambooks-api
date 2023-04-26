@@ -1,11 +1,18 @@
 import nodemailer from 'nodemailer'
-import nodemailerSendgrid from 'nodemailer-sendgrid'
 import config from '../config'
+import { defaultEmailFrom } from '../config/auth'
 
 const transport = nodemailer.createTransport(
-  nodemailerSendgrid({
-    apiKey: `${config.applicationKeySendGridApi}`
-  })
+  {
+    service: 'gmail',
+    auth: {
+      user: `${defaultEmailFrom}`,
+      pass: `${config.applicationEmailSenderPass}`
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  }
 )
 
 export { transport }
