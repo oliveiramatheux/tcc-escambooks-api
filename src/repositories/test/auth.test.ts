@@ -12,6 +12,7 @@ import { defaultEmailFrom } from '../../config/auth'
 
 import { User } from '../../models'
 import { clientEmail } from '../../client'
+import { SentMessageInfo } from 'nodemailer'
 
 jest.mock('../../models')
 jest.mock('../../client')
@@ -53,7 +54,7 @@ describe('test auth repositories', () => {
   describe('test sendEmail function', () => {
     it('should return ok when is called with email send correct', async () => {
       const clientSendEmail = clientEmail.sendMail as jest.MockedFunction<typeof clientEmail.sendMail>
-      clientSendEmail.mockResolvedValue('email send')
+      clientSendEmail.mockResolvedValue('email send' as SentMessageInfo)
 
       await sendEmail(mockedIUserResponse, {
         from: defaultEmailFrom,
