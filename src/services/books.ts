@@ -10,6 +10,7 @@ import {
 } from '../repositories'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
+import { getUser } from './users'
 
 const formatBookResponse = ({
   _id, userId, title, authors, publisher, publishedDate, description, pageCount, categories,
@@ -108,13 +109,22 @@ const getBooksByUserIdService = async (userId: string) => {
 }
 
 const getAllBooksService = async () => {
-  const bookResponse = await getAllBooks()
+  const books = await getAllBooks()
 
-  if (!bookResponse.length) {
+  if (!books.length) {
     throw handleError(404, 'Not have any books')
   }
 
-  return formatBooksResponse(bookResponse)
+  const booksResponse = formatBooksResponse(books)
+
+  const booksWithUsers = booksResponse.items.map(async book => {
+    const user = await getUser(book.userId)
+    return { ...book, userName: user.name, userEmail: user.email }
+  })
+
+  const responseBooksWithUsers = await Promise.all(booksWithUsers)
+
+  return { ...booksResponse, items: responseBooksWithUsers }
 }
 
 const createBookService = async (newBook: INewBook) => {
