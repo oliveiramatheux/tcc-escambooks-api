@@ -103,7 +103,9 @@ const mockGetInfoBookByIsbnResponse = {
   description: 'teste',
   pageCount: 200,
   categories: ['teste'],
-  imageLink: 'teste',
+  imageUrl: 'teste',
+  imageName: 'teste',
+  createdAt: 'teste',
   language: 'teste',
   previewLink: 'teste'
 }
@@ -122,9 +124,11 @@ const mockGetBookByIdResponse = {
   description: 'teste',
   pageCount: 200,
   categories: ['teste'],
-  imageLink: 'teste',
+  imageUrl: 'teste',
+  imageName: 'teste',
   language: 'teste',
-  previewLink: 'teste'
+  previewLink: 'teste',
+  createdAt: 'teste'
 }
 
 const mockBookRequest = {
@@ -135,9 +139,8 @@ const mockBookRequest = {
   description: 'teste',
   pageCount: 200,
   categories: ['teste'],
-  imageLinks: {
-    thumbnail: 'teste'
-  },
+  imageUrl: 'teste',
+  imageName: 'teste',
   language: 'teste',
   previewLink: 'teste'
 }
@@ -152,7 +155,9 @@ const mockBookResponse = {
   description: 'teste',
   pageCount: 200,
   categories: ['teste'],
-  imageLink: 'teste',
+  imageUrl: 'teste',
+  imageName: 'teste',
+  createdAt: 'teste',
   language: 'teste',
   previewLink: 'teste'
 }
@@ -167,7 +172,9 @@ const mockDeleteBookByIdResponse = {
   description: 'teste',
   pageCount: 200,
   categories: ['teste'],
-  imageLink: 'teste',
+  imageUrl: 'teste',
+  imageName: 'teste',
+  createdAt: 'teste',
   language: 'teste',
   previewLink: 'teste'
 }
@@ -184,7 +191,9 @@ const mockGetBooksByUserIdResponse = {
       description: 'teste',
       pageCount: 200,
       categories: ['teste'],
-      imageLink: 'teste',
+      imageUrl: 'teste',
+      imageName: 'teste',
+      date: 'teste',
       language: 'teste',
       previewLink: 'teste'
     }

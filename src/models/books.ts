@@ -9,9 +9,8 @@ export interface INewBook {
   description: string,
   pageCount: number,
   categories: string[],
-  imageLinks?: {
-    thumbnail: string
-  },
+  imageUrl?: string,
+  imageName?: string,
   language: string,
   previewLink?: string,
 }
@@ -24,9 +23,8 @@ export interface IUpdateBook {
   description: string,
   pageCount: number,
   categories: string[],
-  imageLinks?: {
-    thumbnail: string
-  },
+  imageUrl?: string,
+  imageName?: string,
   language: string,
   previewLink?: string,
 }
@@ -41,9 +39,8 @@ export interface IBookResponse {
   description: string,
   pageCount: number,
   categories: string[],
-  imageLinks?: {
-    thumbnail: string
-  },
+  imageUrl?: string,
+  imageName?: string,
   language: string,
   previewLink?: string,
   createdAt?: string
@@ -57,9 +54,8 @@ export interface IBookExternalApiResponse {
   description?: string,
   pageCount?: number,
   categories?: string[],
-  imageLinks?: {
-    thumbnail?: string
-  },
+  imageUrl?: string,
+  imageName?: string,
   language?: string,
   previewLink?: string,
 }
@@ -73,9 +69,8 @@ export interface IBook {
   description: string,
   pageCount: number,
   categories: string[],
-  imageLinks?: {
-    thumbnail: string
-  },
+  imageUrl?: string,
+  imageName?: string,
   language: string,
   previewLink?: string,
 }
@@ -113,10 +108,11 @@ const BookSchema: Schema<IBook> = new Schema({
     type: [],
     require: true
   },
-  imageLinks: {
-    thumbnail: {
-      type: String
-    }
+  imageUrl: {
+    type: String
+  },
+  imageName: {
+    type: String
   },
   language: {
     type: String,

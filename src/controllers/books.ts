@@ -26,7 +26,7 @@ const createBookController = asyncHandler(async (request: Request, response: Res
   const {
     title, authors, publisher,
     publishedDate, description, pageCount,
-    categories, imageLinks, language, previewLink
+    categories, imageUrl, imageName, language, previewLink
   } = request.body
 
   const { userId } = request.headers
@@ -40,7 +40,8 @@ const createBookController = asyncHandler(async (request: Request, response: Res
     description,
     pageCount,
     categories,
-    imageLinks,
+    imageUrl,
+    imageName,
     language,
     previewLink
   })
@@ -70,7 +71,7 @@ const updateBookByIdController = asyncHandler(async (request: Request, response:
   const {
     title, authors, publisher,
     publishedDate, description, pageCount,
-    categories, imageLinks, language, previewLink
+    categories, imageUrl, imageName, language, previewLink
   } = request.body
   const { userId } = request.headers
   const newBook = await updateBookByIdService(id, {
@@ -81,7 +82,8 @@ const updateBookByIdController = asyncHandler(async (request: Request, response:
     description,
     pageCount,
     categories,
-    imageLinks,
+    imageUrl,
+    imageName,
     language,
     previewLink
   }, String(userId))

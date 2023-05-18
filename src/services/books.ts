@@ -14,7 +14,7 @@ import { getUser } from './users'
 
 const formatBookResponse = ({
   _id, userId, title, authors, publisher, publishedDate, description, pageCount, categories,
-  imageLinks, language, previewLink, createdAt
+  imageUrl, imageName, language, previewLink, createdAt
 }: IBookResponse) => ({
   id: _id,
   userId,
@@ -25,7 +25,8 @@ const formatBookResponse = ({
   description,
   pageCount,
   categories,
-  imageLink: imageLinks.thumbnail,
+  imageUrl,
+  imageName,
   language,
   previewLink,
   createdAt
@@ -46,7 +47,8 @@ const formatBooksResponse = (books: IBookResponse[]) => {
             description: book.description,
             pageCount: book.pageCount,
             categories: book.categories,
-            imageLink: book.imageLinks.thumbnail,
+            imageUrl: book.imageUrl,
+            imageName: book.imageName,
             language: book.language,
             previewLink: book.previewLink,
             date: book.createdAt
@@ -67,7 +69,8 @@ const formatExternalBookResponse = (book: IBookExternalApiResponse) => {
       description: book.description,
       pageCount: book.pageCount,
       categories: book.categories,
-      imageLink: book.imageLinks?.thumbnail,
+      imageUrl: book.imageUrl,
+      imageName: book.imageName,
       language: book.language,
       previewLink: book.previewLink
     }
