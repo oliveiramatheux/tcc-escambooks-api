@@ -28,9 +28,8 @@ const validateParamsCreateBook = celebrate({
     description: Joi.string().required(),
     pageCount: Joi.number().required(),
     categories: Joi.array().items(Joi.string().required()),
-    imageLinks: Joi.object({
-      thumbnail: Joi.string().required()
-    }),
+    imageUrl: Joi.string(),
+    imageName: Joi.string(),
     language: Joi.string().required(),
     previewLink: Joi.string()
   })
@@ -50,9 +49,8 @@ const validateParamsUpdateBookById = celebrate({
     description: Joi.string(),
     pageCount: Joi.number(),
     categories: Joi.array().items(Joi.string()),
-    imageLinks: Joi.object({
-      thumbnail: Joi.string()
-    }),
+    imageUrl: Joi.string(),
+    imageName: Joi.string(),
     language: Joi.string(),
     previewLink: Joi.string()
   })
