@@ -15,7 +15,9 @@ const formatResponse = (response: IUserResponse) => {
     _id: response._id,
     name: response.name,
     email: response.email,
-    age: response.age
+    birthDate: response.birthDate,
+    imageUrl: response.imageUrl,
+    imageName: response.imageName
   }
 }
 

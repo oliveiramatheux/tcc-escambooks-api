@@ -18,7 +18,9 @@ const validateParamsCreateUser = celebrate({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
-    age: Joi.number().integer()
+    birthDate: Joi.string(),
+    imageUrl: Joi.string(),
+    imageName: Joi.string()
   })
 })
 
@@ -31,7 +33,9 @@ const validateParamsUpdateUser = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string(),
     email: Joi.string().email(),
-    age: Joi.number().integer()
+    birthDate: Joi.string(),
+    imageUrl: Joi.string(),
+    imageName: Joi.string()
   })
 })
 

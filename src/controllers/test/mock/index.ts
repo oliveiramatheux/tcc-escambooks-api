@@ -19,7 +19,7 @@ const mockIUserResponse = {
   name: 'teste',
   email: 'teste@teste.com',
   password: 'teste123',
-  age: '12'
+  birthDate: '12/12/2000'
 }
 
 const mockRequestCreateUser = {
@@ -33,20 +33,20 @@ const mockResponseCreateUser = {
   name: 'teste',
   email: 'teste@teste.com',
   password: 'teste123',
-  age: null
+  birthDate: null
 }
 
 const mockUpdateUserRequest = {
   name: 'teste2',
   email: 'teste2@teste.com',
-  age: '13'
+  birthDate: '12/12/2000'
 }
 const mockUpdateUserResponse = {
   _id: '60c365be4168d05c46a6c7be',
   name: 'teste2',
   email: 'teste2@teste.com',
   password: 'teste123',
-  age: '13'
+  birthDate: '12/12/2000'
 }
 
 const mockAuthRequest = {

@@ -9,8 +9,8 @@ const getUserByIdController = asyncHandler(async (request: Request, response: Re
 })
 
 const createUserController = asyncHandler(async (request: Request, response: Response) => {
-  const { name, email, password, age } = request.body
-  const newUser = await createUser({ name, email, password, age })
+  const { name, email, password, birthDate, imageUrl, imageName } = request.body
+  const newUser = await createUser({ name, email, password, birthDate, imageUrl, imageName })
   response.status(201).send(newUser)
 })
 
@@ -22,8 +22,8 @@ const deleteUserByIdController = asyncHandler(async (request: Request, response:
 
 const updateUserByIdController = asyncHandler(async (request: Request, response: Response) => {
   const { id } = request.params
-  const { name, email, age } = request.body
-  const newUser = await updateUser(id, { name, email, age })
+  const { name, email, birthDate, imageUrl, imageName } = request.body
+  const newUser = await updateUser(id, { name, email, birthDate, imageUrl, imageName })
   response.status(200).send(newUser)
 })
 
