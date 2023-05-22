@@ -18,7 +18,7 @@ const mockIUserResponse = {
   _id: '60c365be4168d05c46a6c7be',
   name: 'teste',
   email: 'teste@teste.com',
-  age: '12'
+  birthDate: '12/12/2000'
 }
 
 const mockRequestCreateUser = {
@@ -31,19 +31,19 @@ const mockResponseCreateUser = {
   _id: '60c365be4168d05c46a6c7be',
   name: 'teste',
   email: 'teste@teste.com',
-  age: null
+  birthDate: null
 }
 
 const mockUpdateUserRequest = {
   name: 'teste2',
   email: 'teste2@teste.com',
-  age: '13'
+  birthDate: '12/12/2000'
 }
 const mockUpdateUserResponse = {
   _id: '60c365be4168d05c46a6c7be',
   name: 'teste2',
   email: 'teste2@teste.com',
-  age: '13'
+  birthDate: '12/12/2000'
 }
 
 const mockGetUserByEmail = {
@@ -54,7 +54,7 @@ const mockIUserResponseWithPassword = {
   _id: '60c365be4168d05c46a6c7be',
   name: 'teste',
   email: 'teste@teste.com',
-  age: '12',
+  birthDate: '12/12/2000',
   password: '123456'
 }
 
@@ -161,7 +161,7 @@ const mockedIUserResponse = {
   _id: '60c365be4168d05c46a6c7be',
   name: 'teste',
   email: 'teste@teste.com',
-  age: '12',
+  birthDate: '12/12/2000',
   secretToken: '12345678',
   resetToken: '12345678',
   active: false

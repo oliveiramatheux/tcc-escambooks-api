@@ -6,7 +6,9 @@ export interface INewUser {
   name?: string;
   email?: string;
   password?: string;
-  age?: string;
+  birthDate?: string;
+  imageUrl?: string;
+  imageName?: string;
   secretToken?: string;
   resetToken?: string;
   active?: boolean;
@@ -17,7 +19,9 @@ export interface IUserResponse {
   name: string;
   email: string;
   password?: string;
-  age?: string;
+  birthDate?: string;
+  imageUrl?: string;
+  imageName?: string;
   secretToken?: string;
   resetToken?: string;
   active?: boolean;
@@ -27,7 +31,9 @@ export interface IUser {
   name: string;
   email: string;
   password?: string;
-  age?: string;
+  birthDate?: string;
+  imageUrl?: string;
+  imageName?: string;
   secretToken?: string;
   resetToken?: string;
   active?: boolean;
@@ -51,7 +57,13 @@ const UserSchema: Schema<IUser> = new Schema({
     minLength: [6, 'Password should be at least six characters'],
     select: false
   },
-  age: {
+  birthDate: {
+    type: String
+  },
+  imageUrl: {
+    type: String
+  },
+  imageName: {
     type: String
   },
   secretToken: {

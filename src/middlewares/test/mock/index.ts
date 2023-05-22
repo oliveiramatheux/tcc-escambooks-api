@@ -5,7 +5,7 @@ const mockIdRequestUpdateUserById = {
 const mockUpdateUserRequest = {
   name: 'teste2',
   email: 'teste2@teste.com',
-  age: '13'
+  birthDate: '12/12/2000'
 }
 
 const mockUpdateUserResponse = {
@@ -13,7 +13,7 @@ const mockUpdateUserResponse = {
   name: 'teste2',
   email: 'teste2@teste.com',
   password: 'teste123',
-  age: '13'
+  birthDate: '12/12/2000'
 }
 
 export {
