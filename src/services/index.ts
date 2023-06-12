@@ -25,6 +25,15 @@ import {
   getAllBooksService
 } from './books'
 
+import {
+  getLikeByIdService,
+  createLikeService,
+  deleteLikeService,
+  updateLikeByIdService,
+  getLikesByBookUserIdService,
+  getLikesByUserLikedIdService
+} from './likes'
+
 export {
   getUser,
   createUser,
@@ -43,5 +52,11 @@ export {
   authSendPasswordResetService,
   authResetPasswordTokenService,
   authResetPasswordService,
-  getAllBooksService
+  getAllBooksService,
+  getLikeByIdService,
+  createLikeService,
+  deleteLikeService,
+  updateLikeByIdService,
+  getLikesByBookUserIdService,
+  getLikesByUserLikedIdService
 }

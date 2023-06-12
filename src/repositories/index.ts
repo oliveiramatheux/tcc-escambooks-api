@@ -21,6 +21,15 @@ import {
   updateBookById
 } from './books'
 
+import {
+  getLikeById,
+  createLike,
+  deleteLike,
+  updateLikeById,
+  getLikesByBookUserId,
+  getLikesByUserLikedId
+} from './likes'
+
 export {
   getUserById,
   createNewUser,
@@ -35,5 +44,11 @@ export {
   getBooksByUserId,
   getAllBooks,
   updateBookById,
-  sendEmail
+  sendEmail,
+  getLikeById,
+  createLike,
+  deleteLike,
+  updateLikeById,
+  getLikesByBookUserId,
+  getLikesByUserLikedId
 }
