@@ -10,14 +10,33 @@ import {
 
 const router = Router()
 
-router.get('/:id', validateParamsGetUserById, usersController.getUserByIdController)
+router.get(
+  '/:id',
+  validateParamsGetUserById,
+  usersController.getUserByIdController
+)
 
 router.post('/', validateParamsCreateUser, usersController.createUserController)
 
-router.delete('/:id', validateParamsDeleteUserById, usersController.deleteUserByIdController)
+router.delete(
+  '/:id',
+  validateParamsDeleteUserById,
+  usersController.deleteUserByIdController
+)
 
-router.patch('/:id', verifyToken, validateParamsUpdateUser, usersController.updateUserByIdController)
+router.patch(
+  '/:id',
+  verifyToken,
+  validateParamsUpdateUser,
+  usersController.updateUserByIdController
+)
 
-router.get('/books/list', verifyToken, booksController.getBooksByUserIdController)
+router.get('/books/list', verifyToken, booksController.getAllBooksController)
+
+router.get(
+  '/:id/books',
+  verifyToken,
+  booksController.getBooksByUserIdController
+)
 
 export default router

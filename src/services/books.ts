@@ -1,4 +1,9 @@
-import { IBookResponse, INewBook, IUpdateBook, IBookExternalApiResponse } from '../models/books'
+import {
+  IBookResponse,
+  INewBook,
+  IUpdateBook,
+  IBookExternalApiResponse
+} from '../models/books'
 import {
   getInfoBookByIsbn,
   getBookById,
@@ -13,8 +18,20 @@ import { objectFormatter } from '../utils/objectFormatter'
 import { getUser } from './users'
 
 const formatBookResponse = ({
-  _id, userId, title, authors, publisher, publishedDate, description, pageCount, categories,
-  imageUrl, imageName, language, previewLink, createdAt
+  _id,
+  userId,
+  title,
+  authors,
+  publisher,
+  publishedDate,
+  description,
+  pageCount,
+  categories,
+  imageUrl,
+  imageName,
+  language,
+  previewLink,
+  createdAt
 }: IBookResponse) => ({
   id: _id,
   userId,
@@ -33,48 +50,43 @@ const formatBookResponse = ({
 })
 
 const formatBooksResponse = (books: IBookResponse[]) => {
-  return (
-    {
-      items:
-        books.map(book => {
-          return ({
-            id: book._id,
-            userId: book.userId,
-            title: book.title,
-            authors: book.authors,
-            publisher: book.publisher,
-            publishedDate: book.publishedDate,
-            description: book.description,
-            pageCount: book.pageCount,
-            categories: book.categories,
-            imageUrl: book.imageUrl,
-            imageName: book.imageName,
-            language: book.language,
-            previewLink: book.previewLink,
-            date: book.createdAt
-          })
-        }),
-      totalItems: books.length
-    }
-  )
+  return {
+    items: books.map((book) => {
+      return {
+        id: book._id,
+        userId: book.userId,
+        title: book.title,
+        authors: book.authors,
+        publisher: book.publisher,
+        publishedDate: book.publishedDate,
+        description: book.description,
+        pageCount: book.pageCount,
+        categories: book.categories,
+        imageUrl: book.imageUrl,
+        imageName: book.imageName,
+        language: book.language,
+        previewLink: book.previewLink,
+        date: book.createdAt
+      }
+    }),
+    totalItems: books.length
+  }
 }
 
 const formatExternalBookResponse = (book: IBookExternalApiResponse) => {
-  return (
-    {
-      title: book.title,
-      authors: book.authors,
-      publisher: book.publisher,
-      publishedDate: book.publishedDate,
-      description: book.description,
-      pageCount: book.pageCount,
-      categories: book.categories,
-      imageUrl: book.imageUrl,
-      imageName: book.imageName,
-      language: book.language,
-      previewLink: book.previewLink
-    }
-  )
+  return {
+    title: book.title,
+    authors: book.authors,
+    publisher: book.publisher,
+    publishedDate: book.publishedDate,
+    description: book.description,
+    pageCount: book.pageCount,
+    categories: book.categories,
+    imageUrl: book.imageUrl,
+    imageName: book.imageName,
+    language: book.language,
+    previewLink: book.previewLink
+  }
 }
 
 const getInfoBookByIsbnService = async (isbn: string) => {
@@ -102,13 +114,22 @@ const getBookByIdService = async (id: string) => {
 }
 
 const getBooksByUserIdService = async (userId: string) => {
-  const bookResponse = await getBooksByUserId(userId)
+  const books = await getBooksByUserId(userId)
 
-  if (!bookResponse.length) {
+  if (!books.length) {
     throw handleError(404, 'This user not have books')
   }
 
-  return formatBooksResponse(bookResponse)
+  const booksResponse = formatBooksResponse(books)
+
+  const booksWithUsers = booksResponse.items.map(async (book) => {
+    const user = await getUser(book.userId)
+    return { ...book, userName: user.name, userEmail: user.email }
+  })
+
+  const responseBooksWithUsers = await Promise.all(booksWithUsers)
+
+  return { ...booksResponse, items: responseBooksWithUsers }
 }
 
 const getAllBooksService = async () => {
@@ -120,7 +141,7 @@ const getAllBooksService = async () => {
 
   const booksResponse = formatBooksResponse(books)
 
-  const booksWithUsers = booksResponse.items.map(async book => {
+  const booksWithUsers = booksResponse.items.map(async (book) => {
     const user = await getUser(book.userId)
     return { ...book, userName: user.name, userEmail: user.email }
   })
@@ -155,7 +176,11 @@ const deleteBookByIdService = async (id: string, userId: string) => {
   return formatBookResponse(bookDeleteResponse)
 }
 
-const updateBookByIdService = async (id: string, newBook: IUpdateBook, userId: string) => {
+const updateBookByIdService = async (
+  id: string,
+  newBook: IUpdateBook,
+  userId: string
+) => {
   const bookResponse = await getBookById(id)
 
   if (!bookResponse) {
@@ -166,7 +191,10 @@ const updateBookByIdService = async (id: string, newBook: IUpdateBook, userId: s
     throw handleError(401, 'This user not have permission of update this book')
   }
 
-  const bookUpdateResponse = await updateBookById(id, objectFormatter(newBook) as IUpdateBook)
+  const bookUpdateResponse = await updateBookById(
+    id,
+    objectFormatter(newBook) as IUpdateBook
+  )
   return formatBookResponse(bookUpdateResponse)
 }
 
