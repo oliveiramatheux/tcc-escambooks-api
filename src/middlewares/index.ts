@@ -23,6 +23,15 @@ import {
   validateParamsUpdateBookById
 } from './books'
 
+import {
+  validateParamsGetLikeById,
+  validateParamsCreateLike,
+  validateParamsDeleteLikeById,
+  validateParamsUpdateLike,
+  validateParamsGetLikesByBookUserId,
+  validateParamsGetLikesByUserLikedId
+} from './likes'
+
 export {
   validateParamsGetUserById,
   validateParamsCreateUser,
@@ -39,5 +48,11 @@ export {
   validateParamsAuthSendEmailVerify,
   validateParamsAuthSendPasswordReset,
   validateParamsAuthResetPassword,
-  validateParamsAuthResetPasswordToken
+  validateParamsAuthResetPasswordToken,
+  validateParamsGetLikeById,
+  validateParamsCreateLike,
+  validateParamsDeleteLikeById,
+  validateParamsUpdateLike,
+  validateParamsGetLikesByBookUserId,
+  validateParamsGetLikesByUserLikedId
 }
