@@ -20,7 +20,7 @@ const validateParamsCreateLike = celebrate({
     bookUserId: Joi.string().required(),
     userLikedId: Joi.string().required(),
     userLikedName: Joi.string().required(),
-    isVisualized: Joi.boolean().required()
+    isVisualized: Joi.boolean()
   })
 })
 
@@ -41,14 +41,14 @@ const validateParamsUpdateLike = celebrate({
 })
 
 const validateParamsGetLikesByBookUserId = celebrate({
-  [Segments.BODY]: Joi.object().keys({
-    bookUserId: Joi.string().required()
+  [Segments.PARAMS]: Joi.object().keys({
+    bookUserId: myJoiObjectId().required()
   })
 })
 
 const validateParamsGetLikesByUserLikedId = celebrate({
-  [Segments.BODY]: Joi.object().keys({
-    userLikedId: Joi.string().required()
+  [Segments.PARAMS]: Joi.object().keys({
+    userLikedId: myJoiObjectId().required()
   })
 })
 

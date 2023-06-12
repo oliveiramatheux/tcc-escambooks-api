@@ -63,13 +63,13 @@ const updateLikeByIdController = asyncHandler(async (request: Request, response:
 })
 
 const getLikesByBookUserIdController = asyncHandler(async (request: Request, response: Response) => {
-  const { bookUserId } = request.body
+  const { bookUserId } = request.params
   const likes = await getLikesByBookUserIdService(bookUserId)
   response.status(200).send(likes)
 })
 
 const getLikesByUserLikedIdController = asyncHandler(async (request: Request, response: Response) => {
-  const { userLikedId } = request.body
+  const { userLikedId } = request.params
   const likes = await getLikesByUserLikedIdService(userLikedId)
   response.status(200).send(likes)
 })

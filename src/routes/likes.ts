@@ -12,9 +12,9 @@ import {
 
 const router = Router()
 
-router.get('/bookUserId', verifyToken, validateParamsGetLikesByBookUserId, likesController.getLikesByBookUserIdController)
+router.get('/bookUserId/:bookUserId', verifyToken, validateParamsGetLikesByBookUserId, likesController.getLikesByBookUserIdController)
 
-router.get('/userLikedId', verifyToken, validateParamsGetLikesByUserLikedId, likesController.getLikesByUserLikedIdController)
+router.get('/userLikedId/:userLikedId', verifyToken, validateParamsGetLikesByUserLikedId, likesController.getLikesByUserLikedIdController)
 
 router.get('/:id', verifyToken, validateParamsGetLikeById, likesController.getLikeByIdController)
 

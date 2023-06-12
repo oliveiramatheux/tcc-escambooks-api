@@ -37,7 +37,6 @@ const LikeSchema: Schema<ILike> = new Schema({
   },
   isVisualized: {
     type: Boolean,
-    required: true,
     default: false
   }
 },
