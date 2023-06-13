@@ -61,8 +61,9 @@ const getBooksByUserIdController = asyncHandler(async (request: Request, respons
   response.status(200).send(books)
 })
 
-const getAllBooksController = asyncHandler(async (_request: Request, response: Response) => {
-  const books = await getAllBooksService()
+const getAllBooksController = asyncHandler(async (request: Request, response: Response) => {
+  const { userId } = request.headers
+  const books = await getAllBooksService(String(userId))
   response.status(200).send(books)
 })
 
