@@ -6,7 +6,8 @@ import {
   deleteBookByIdService,
   getBooksByUserIdService,
   updateBookByIdService,
-  getAllBooksService
+  getAllBooksService,
+  getLikedBooksService
 } from '../services'
 import asyncHandler from 'express-async-handler'
 
@@ -88,6 +89,14 @@ const getAllBooksController = asyncHandler(
   }
 )
 
+const getLikedBooksController = asyncHandler(
+  async (request: Request, response: Response) => {
+    const { userId } = request.headers
+    const books = await getLikedBooksService(String(userId))
+    response.status(200).send(books)
+  }
+)
+
 const updateBookByIdController = asyncHandler(
   async (request: Request, response: Response) => {
     const { id } = request.params
@@ -133,5 +142,6 @@ export {
   deleteBookByIdController,
   getBooksByUserIdController,
   updateBookByIdController,
-  getAllBooksController
+  getAllBooksController,
+  getLikedBooksController
 }

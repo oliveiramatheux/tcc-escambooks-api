@@ -2,7 +2,9 @@ import {
   IBookResponse,
   INewBook,
   IUpdateBook,
-  IBookExternalApiResponse
+  IBookExternalApiResponse,
+  BooksReponse,
+  BookWithUserAndLike
 } from '../models/books'
 import {
   getInfoBookByIsbn,
@@ -12,7 +14,9 @@ import {
   getBooksByUserId,
   updateBookById,
   getAllBooks,
-  getLikeByUserLikedIdAndBookId
+  getLikeByUserLikedIdAndBookId,
+  getLikesByUserLikedId,
+  getBooksByIds
 } from '../repositories'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
@@ -47,29 +51,41 @@ const formatBookResponse = ({
   imageName,
   language,
   previewLink,
-  createdAt
+  date: createdAt
 })
 
-const formatBooksResponse = (books: IBookResponse[]) => {
+const formatBooksResponse = async (
+  userId: string,
+  books: IBookResponse[]
+): Promise<BooksReponse> => {
+  const formatedBooks = books.map(formatBookResponse)
+
+  const booksWithUser = formatedBooks.map(async (book) => {
+    const user = await getUser(book.userId)
+    return {
+      ...book,
+      userName: user.name,
+      userEmail: user.email,
+      userImageUrl: user.imageUrl
+    }
+  })
+
+  const responseBooksWithUser = await Promise.all(booksWithUser)
+
+  const booksWithUserAndLike = responseBooksWithUser.map(async (book) => {
+    const like = await getLikeByUserLikedIdAndBookId(userId, book.id)
+    if (like && like.bookId === String(book.id)) {
+      return { ...book, alreadyLike: { likeId: like._id } }
+    }
+    return book
+  })
+
+  const reponseBooksWithUserAndLike: BookWithUserAndLike[] = await Promise.all(
+    booksWithUserAndLike
+  )
+
   return {
-    items: books.map((book) => {
-      return {
-        id: book._id,
-        userId: book.userId,
-        title: book.title,
-        authors: book.authors,
-        publisher: book.publisher,
-        publishedDate: book.publishedDate,
-        description: book.description,
-        pageCount: book.pageCount,
-        categories: book.categories,
-        imageUrl: book.imageUrl,
-        imageName: book.imageName,
-        language: book.language,
-        previewLink: book.previewLink,
-        date: book.createdAt
-      }
-    }),
+    items: reponseBooksWithUserAndLike,
     totalItems: books.length
   }
 }
@@ -118,32 +134,25 @@ const getBooksByUserIdService = async (
   userId: string,
   likesFromUserId: string
 ) => {
-  const books = await getBooksByUserId(userId)
+  const bookResponse = await getBooksByUserId(userId)
 
-  if (!books.length) {
+  if (!bookResponse.length) {
     throw handleError(404, 'This user not have books')
   }
 
-  const booksResponse = formatBooksResponse(books)
+  return await formatBooksResponse(likesFromUserId, bookResponse)
+}
 
-  const booksWithUsers = booksResponse.items.map(async (book) => {
-    const user = await getUser(book.userId)
-    return { ...book, userName: user.name, userEmail: user.email }
-  })
+const getLikedBooksService = async (userId: string) => {
+  const likesResponse = await getLikesByUserLikedId(userId)
+  const booksIds = likesResponse.map((like) => like.bookId)
+  const bookResponse = await getBooksByIds(booksIds)
 
-  const responseBooksWithUsers = await Promise.all(booksWithUsers)
+  if (!bookResponse.length) {
+    throw handleError(404, 'This user not have books')
+  }
 
-  const booksWithUserAndLike = responseBooksWithUsers.map(async (book) => {
-    const like = await getLikeByUserLikedIdAndBookId(likesFromUserId, book.id)
-    if (like && like.bookId === String(book.id)) {
-      return { ...book, alreadyLike: { likeId: like._id } }
-    }
-    return book
-  })
-
-  const reponseBooksWithUserAndLike = await Promise.all(booksWithUserAndLike)
-
-  return { ...booksResponse, items: reponseBooksWithUserAndLike }
+  return await formatBooksResponse(userId, bookResponse)
 }
 
 const getAllBooksService = async (userId: string) => {
@@ -153,26 +162,7 @@ const getAllBooksService = async (userId: string) => {
     throw handleError(404, 'Not have any books')
   }
 
-  const booksResponse = formatBooksResponse(books)
-
-  const booksWithUser = booksResponse.items.map(async (book) => {
-    const user = await getUser(book.userId)
-    return { ...book, userName: user.name, userEmail: user.email }
-  })
-
-  const responseBooksWithUser = await Promise.all(booksWithUser)
-
-  const booksWithUserAndLike = responseBooksWithUser.map(async (book) => {
-    const like = await getLikeByUserLikedIdAndBookId(userId, book.id)
-    if (like && like.bookId === String(book.id)) {
-      return { ...book, alreadyLike: { likeId: like._id } }
-    }
-    return book
-  })
-
-  const reponseBooksWithUserAndLike = await Promise.all(booksWithUserAndLike)
-
-  return { ...booksResponse, items: reponseBooksWithUserAndLike }
+  return await formatBooksResponse(userId, books)
 }
 
 const createBookService = async (newBook: INewBook) => {
@@ -229,5 +219,6 @@ export {
   deleteBookByIdService,
   getBooksByUserIdService,
   updateBookByIdService,
-  getAllBooksService
+  getAllBooksService,
+  getLikedBooksService
 }

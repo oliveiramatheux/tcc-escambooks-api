@@ -35,6 +35,12 @@ const getBooksByUserId = async (userId: string) => {
   return book
 }
 
+const getBooksByIds = async (booksIds: string[]) => {
+  return await Book.find<IBookResponse>({ _id: { $in: booksIds } }, null, {
+    sort: { createdAt: 'desc' }
+  })
+}
+
 const getAllBooks = async () => {
   const books = (await Book.find({}, null, {
     sort: { createdAt: 'desc' }
@@ -56,5 +62,6 @@ export {
   deleteBookById,
   getBooksByUserId,
   getAllBooks,
-  updateBookById
+  updateBookById,
+  getBooksByIds
 }
