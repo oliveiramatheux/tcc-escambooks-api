@@ -1,4 +1,9 @@
-import { authenticateUserByEmailAndPassword, getUserByEmail, updateUserById, sendEmail } from '../repositories'
+import {
+  authenticateUserByEmailAndPassword,
+  getUserByEmail,
+  updateUserById,
+  sendEmail
+} from '../repositories'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { authSecret, defaultEmailFrom } from '../config/auth'
@@ -6,47 +11,58 @@ import { handleError } from '../utils/errors'
 import { IUserResponse, INewUser } from '../models/users'
 import { objectFormatter } from '../utils/objectFormatter'
 import randomstring from 'randomstring'
-import { contentTemplateEmailConfirmation, contentTemplateResetPasswordConfirmation, contentTemplateResetPasswordFeedback } from './templates'
+import {
+  contentTemplateEmailConfirmation,
+  contentTemplateResetPasswordConfirmation,
+  contentTemplateResetPasswordFeedback
+} from './templates'
 import config from '../config'
 import Handlebars from 'handlebars'
 
-const templateEmailConfirmartion = Handlebars.compile(contentTemplateEmailConfirmation)
-const templateResetPasswordConfirmation = Handlebars.compile(contentTemplateResetPasswordConfirmation)
-const templateResetPasswordFeedback = Handlebars.compile(contentTemplateResetPasswordFeedback)
+const templateEmailConfirmartion = Handlebars.compile(
+  contentTemplateEmailConfirmation
+)
+const templateResetPasswordConfirmation = Handlebars.compile(
+  contentTemplateResetPasswordConfirmation
+)
+const templateResetPasswordFeedback = Handlebars.compile(
+  contentTemplateResetPasswordFeedback
+)
 
 export interface UserAuthenticate {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 export interface UserAuthenticateResponse {
-  _id?: string;
-  name: string;
-  email: string;
-  password?: string;
-  active?: boolean;
+  _id?: string
+  name: string
+  email: string
+  password?: string
+  active?: boolean
+  imageUrl?: string
 }
 
 export interface UserSendEmail {
-  email: string;
+  email: string
 }
 
 export interface UserResetPasswordWithToken {
-  email: string;
-  resetToken: string;
-  newPassword: string;
+  email: string
+  resetToken: string
+  newPassword: string
 }
 
 export interface UserResetPassword {
-  email: string;
-  password: string;
-  newPassword: string;
+  email: string
+  password: string
+  newPassword: string
 }
 
 export interface GenerateTokenParams {
-  email: string;
-  secretToken: string;
-  id: string;
+  email: string
+  secretToken: string
+  id: string
 }
 
 const generateToken = (generateTokenParams: Partial<GenerateTokenParams>) =>
@@ -56,18 +72,25 @@ const generateToken = (generateTokenParams: Partial<GenerateTokenParams>) =>
 
 const verifyTokenAndEmail = (token: string) => {
   try {
-    const { email, secretToken } = jwt.verify(token, authSecret.secret) as Partial<GenerateTokenParams>
+    const { email, secretToken } = jwt.verify(
+      token,
+      authSecret.secret
+    ) as Partial<GenerateTokenParams>
     return { email, secretToken }
   } catch {
     throw handleError(401, 'Token invalid')
   }
 }
 
-const formatResponse = ({ _id, name, email }: UserAuthenticateResponse, token: string) => ({
+const formatResponse = (
+  { _id, name, email, imageUrl }: UserAuthenticateResponse,
+  token: string
+) => ({
   _id,
   name,
   email,
-  token
+  token,
+  imageUrl
 })
 
 const formatResponseVerifyEmailUser = (response: IUserResponse) => ({
@@ -77,7 +100,8 @@ const formatResponseVerifyEmailUser = (response: IUserResponse) => ({
 })
 
 const authenticateUserService = async (user: UserAuthenticate) => {
-  const userResponse: UserAuthenticateResponse = await authenticateUserByEmailAndPassword(user.email)
+  const userResponse: UserAuthenticateResponse =
+    await authenticateUserByEmailAndPassword(user.email)
 
   if (!userResponse) {
     throw handleError(404, 'User not found')
@@ -87,7 +111,7 @@ const authenticateUserService = async (user: UserAuthenticate) => {
     throw handleError(401, 'This user not verify email')
   }
 
-  if (!await bcrypt.compare(user.password, userResponse.password)) {
+  if (!(await bcrypt.compare(user.password, userResponse.password))) {
     throw handleError(400, 'Invalid password')
   }
   const token = generateToken({ id: userResponse._id })
@@ -128,7 +152,9 @@ const authVerifyEmailService = async (token: string) => {
 }
 
 const authSendEmailVerifyService = async (user: UserSendEmail) => {
-  const userVerifyEmailAlredyExist: IUserResponse = await getUserByEmail(user.email)
+  const userVerifyEmailAlredyExist: IUserResponse = await getUserByEmail(
+    user.email
+  )
   if (!userVerifyEmailAlredyExist) {
     throw handleError(404, 'User not exist')
   }
@@ -137,40 +163,59 @@ const authSendEmailVerifyService = async (user: UserSendEmail) => {
     throw handleError(401, 'This user alredy verify email')
   }
 
-  const token = generateToken({ email: userVerifyEmailAlredyExist.email, secretToken: userVerifyEmailAlredyExist.secretToken })
+  const token = generateToken({
+    email: userVerifyEmailAlredyExist.email,
+    secretToken: userVerifyEmailAlredyExist.secretToken
+  })
 
   const template = {
     from: defaultEmailFrom,
     subject: 'Email de confirmação',
-    html: templateEmailConfirmartion({ url: config.applicationFrontUrl, userName: userVerifyEmailAlredyExist.name, userToken: token })
+    html: templateEmailConfirmartion({
+      url: config.applicationFrontUrl,
+      userName: userVerifyEmailAlredyExist.name,
+      userToken: token
+    })
   }
   sendEmail(userVerifyEmailAlredyExist, template)
 
-  return ({ email: userVerifyEmailAlredyExist.email })
+  return { email: userVerifyEmailAlredyExist.email }
 }
 
 const authSendPasswordResetService = async (user: UserSendEmail) => {
-  const userVerifyEmailAlredyExist: IUserResponse = await authenticateUserByEmailAndPassword(user.email)
+  const userVerifyEmailAlredyExist: IUserResponse =
+    await authenticateUserByEmailAndPassword(user.email)
   if (!userVerifyEmailAlredyExist) {
     throw handleError(404, 'User not exist')
   }
 
-  if (!userVerifyEmailAlredyExist.password || userVerifyEmailAlredyExist.password === '') {
+  if (
+    !userVerifyEmailAlredyExist.password ||
+    userVerifyEmailAlredyExist.password === ''
+  ) {
     throw handleError(401, 'This user dont have password')
   }
 
   const template = {
     from: defaultEmailFrom,
     subject: 'Email de Redefinição de senha',
-    html: templateResetPasswordConfirmation({ url: config.applicationFrontUrl, userName: userVerifyEmailAlredyExist.name, userEmail: userVerifyEmailAlredyExist.email, userToken: userVerifyEmailAlredyExist.resetToken })
+    html: templateResetPasswordConfirmation({
+      url: config.applicationFrontUrl,
+      userName: userVerifyEmailAlredyExist.name,
+      userEmail: userVerifyEmailAlredyExist.email,
+      userToken: userVerifyEmailAlredyExist.resetToken
+    })
   }
   sendEmail(userVerifyEmailAlredyExist, template)
 
-  return ({ email: userVerifyEmailAlredyExist.email })
+  return { email: userVerifyEmailAlredyExist.email }
 }
 
-const authResetPasswordTokenService = async (user: UserResetPasswordWithToken) => {
-  const userVerifyEmailAlredyExist: IUserResponse = await authenticateUserByEmailAndPassword(user.email)
+const authResetPasswordTokenService = async (
+  user: UserResetPasswordWithToken
+) => {
+  const userVerifyEmailAlredyExist: IUserResponse =
+    await authenticateUserByEmailAndPassword(user.email)
   if (!userVerifyEmailAlredyExist) {
     throw handleError(404, 'User not exist')
   }
@@ -179,7 +224,10 @@ const authResetPasswordTokenService = async (user: UserResetPasswordWithToken) =
     throw handleError(401, 'Invalid reset token for this email')
   }
 
-  if (!userVerifyEmailAlredyExist.password || userVerifyEmailAlredyExist.password === '') {
+  if (
+    !userVerifyEmailAlredyExist.password ||
+    userVerifyEmailAlredyExist.password === ''
+  ) {
     throw handleError(401, 'This user dont have password')
   }
 
@@ -189,8 +237,13 @@ const authResetPasswordTokenService = async (user: UserResetPasswordWithToken) =
     charset: 'numeric'
   })
 
-  const newUserResponse: IUserResponse = await updateUserById(userVerifyEmailAlredyExist._id,
-    objectFormatter<INewUser>({ password: newPasswordHashed, resetToken: newResetToken }))
+  const newUserResponse: IUserResponse = await updateUserById(
+    userVerifyEmailAlredyExist._id,
+    objectFormatter<INewUser>({
+      password: newPasswordHashed,
+      resetToken: newResetToken
+    })
+  )
 
   if (!newUserResponse) {
     throw handleError(400, 'An error occured when update this password')
@@ -199,15 +252,21 @@ const authResetPasswordTokenService = async (user: UserResetPasswordWithToken) =
   const template = {
     from: defaultEmailFrom,
     subject: 'Senha alterada',
-    html: templateResetPasswordFeedback({ userName: userVerifyEmailAlredyExist.name })
+    html: templateResetPasswordFeedback({
+      userName: userVerifyEmailAlredyExist.name
+    })
   }
   sendEmail(userVerifyEmailAlredyExist, template)
 
-  return ({ email: userVerifyEmailAlredyExist.email })
+  return { email: userVerifyEmailAlredyExist.email }
 }
 
-const authResetPasswordService = async (user: UserResetPassword, userId: string) => {
-  const userVerifyEmailAlredyExist: IUserResponse = await authenticateUserByEmailAndPassword(user.email)
+const authResetPasswordService = async (
+  user: UserResetPassword,
+  userId: string
+) => {
+  const userVerifyEmailAlredyExist: IUserResponse =
+    await authenticateUserByEmailAndPassword(user.email)
   if (!userVerifyEmailAlredyExist) {
     throw handleError(404, 'User not exist')
   }
@@ -216,22 +275,32 @@ const authResetPasswordService = async (user: UserResetPassword, userId: string)
     throw handleError(401, 'This user not have permission of update password')
   }
 
-  if (!userVerifyEmailAlredyExist.password || userVerifyEmailAlredyExist.password === '') {
+  if (
+    !userVerifyEmailAlredyExist.password ||
+    userVerifyEmailAlredyExist.password === ''
+  ) {
     throw handleError(401, 'This user dont have password')
   }
 
-  if (!await bcrypt.compare(user.password, userVerifyEmailAlredyExist.password)) {
+  if (
+    !(await bcrypt.compare(user.password, userVerifyEmailAlredyExist.password))
+  ) {
     throw handleError(401, 'Invalid password')
   }
 
   if (user.password === user.newPassword) {
-    throw handleError(401, 'The new password cannot be the same as the password')
+    throw handleError(
+      401,
+      'The new password cannot be the same as the password'
+    )
   }
 
   const newPasswordHashed = await bcrypt.hash(user.newPassword, 10)
 
-  const newUserResponse: IUserResponse = await updateUserById(userVerifyEmailAlredyExist._id,
-    objectFormatter<INewUser>({ password: newPasswordHashed }))
+  const newUserResponse: IUserResponse = await updateUserById(
+    userVerifyEmailAlredyExist._id,
+    objectFormatter<INewUser>({ password: newPasswordHashed })
+  )
 
   if (!newUserResponse) {
     throw handleError(400, 'An error occured when update this password')
@@ -240,11 +309,13 @@ const authResetPasswordService = async (user: UserResetPassword, userId: string)
   const template = {
     from: defaultEmailFrom,
     subject: 'Senha alterada',
-    html: templateResetPasswordFeedback({ userName: userVerifyEmailAlredyExist.name })
+    html: templateResetPasswordFeedback({
+      userName: userVerifyEmailAlredyExist.name
+    })
   }
   sendEmail(userVerifyEmailAlredyExist, template)
 
-  return ({ email: userVerifyEmailAlredyExist.email })
+  return { email: userVerifyEmailAlredyExist.email }
 }
 
 export {
