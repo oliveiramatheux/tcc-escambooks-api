@@ -31,8 +31,6 @@ router.patch(
   usersController.updateUserByIdController
 )
 
-router.get('/books/list', verifyToken, booksController.getAllBooksController)
-
 router.get(
   '/:id/books',
   verifyToken,

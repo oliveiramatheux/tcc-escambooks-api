@@ -74,7 +74,8 @@ const deleteBookByIdController = asyncHandler(
 const getBooksByUserIdController = asyncHandler(
   async (request: Request, response: Response) => {
     const { id } = request.params
-    const books = await getBooksByUserIdService(String(id))
+    const { userId } = request.headers
+    const books = await getBooksByUserIdService(String(id), String(userId))
     response.status(200).send(books)
   }
 )

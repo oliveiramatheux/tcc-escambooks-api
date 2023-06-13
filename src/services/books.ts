@@ -114,7 +114,10 @@ const getBookByIdService = async (id: string) => {
   return formatBookResponse(bookResponse)
 }
 
-const getBooksByUserIdService = async (userId: string) => {
+const getBooksByUserIdService = async (
+  userId: string,
+  likesFromUserId: string
+) => {
   const books = await getBooksByUserId(userId)
 
   if (!books.length) {
@@ -130,7 +133,17 @@ const getBooksByUserIdService = async (userId: string) => {
 
   const responseBooksWithUsers = await Promise.all(booksWithUsers)
 
-  return { ...booksResponse, items: responseBooksWithUsers }
+  const booksWithUserAndLike = responseBooksWithUsers.map(async (book) => {
+    const like = await getLikeByUserLikedIdAndBookId(likesFromUserId, book.id)
+    if (like && like.bookId === String(book.id)) {
+      return { ...book, alreadyLike: { likeId: like._id } }
+    }
+    return book
+  })
+
+  const reponseBooksWithUserAndLike = await Promise.all(booksWithUserAndLike)
+
+  return { ...booksResponse, items: reponseBooksWithUserAndLike }
 }
 
 const getAllBooksService = async (userId: string) => {
