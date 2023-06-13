@@ -26,4 +26,8 @@ const getLikesByUserLikedId = async (userLikedId: string) => {
   return await Like.find<ILikeResponse>({ userLikedId })
 }
 
-export { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId }
+const getLikeByUserLikedIdAndBookId = async (userLikedId: string, bookId: string) => {
+  return await Like.findOne<ILikeResponse>({ userLikedId, bookId })
+}
+
+export { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, getLikeByUserLikedIdAndBookId }

@@ -27,7 +27,8 @@ import {
   deleteLike,
   updateLikeById,
   getLikesByBookUserId,
-  getLikesByUserLikedId
+  getLikesByUserLikedId,
+  getLikeByUserLikedIdAndBookId
 } from './likes'
 
 export {
@@ -50,5 +51,6 @@ export {
   deleteLike,
   updateLikeById,
   getLikesByBookUserId,
-  getLikesByUserLikedId
+  getLikesByUserLikedId,
+  getLikeByUserLikedIdAndBookId
 }
