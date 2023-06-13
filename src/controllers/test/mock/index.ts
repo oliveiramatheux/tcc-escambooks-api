@@ -35,7 +35,7 @@ const mockResponseCreateUser = {
   name: 'teste',
   email: 'teste@teste.com',
   password: 'teste123',
-  birthDate: null,
+  birthDate: '',
   imageName: '',
   imageUrl: ''
 }
