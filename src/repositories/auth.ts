@@ -11,7 +11,6 @@ const authenticateUserByEmailAndPassword = async (email: string) => {
   const user = (await User.findOne({ email }).select(
     '+password'
   )) as unknown as IUserResponse
-  console.log(user)
   return user
 }
 
