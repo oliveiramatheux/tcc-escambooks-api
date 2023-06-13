@@ -6,7 +6,8 @@ import {
   deleteBookById,
   getBooksByUserId,
   updateBookById,
-  getAllBooks
+  getAllBooks,
+  getLikeByUserLikedIdAndBookId
 } from '../repositories'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
@@ -111,7 +112,7 @@ const getBooksByUserIdService = async (userId: string) => {
   return formatBooksResponse(bookResponse)
 }
 
-const getAllBooksService = async () => {
+const getAllBooksService = async (userId: string) => {
   const books = await getAllBooks()
 
   if (!books.length) {
@@ -120,14 +121,22 @@ const getAllBooksService = async () => {
 
   const booksResponse = formatBooksResponse(books)
 
-  const booksWithUsers = booksResponse.items.map(async book => {
+  const booksWithUser = booksResponse.items.map(async book => {
     const user = await getUser(book.userId)
     return { ...book, userName: user.name, userEmail: user.email }
   })
 
-  const responseBooksWithUsers = await Promise.all(booksWithUsers)
+  const responseBooksWithUser = await Promise.all(booksWithUser)
 
-  return { ...booksResponse, items: responseBooksWithUsers }
+  const booksWithUserAndLike = responseBooksWithUser.map(async book => {
+    const like = await getLikeByUserLikedIdAndBookId(userId, book.id)
+    if (like && like.bookId === String(book.id)) return { ...book, alreadyLike: { likeId: like._id } }
+    return book
+  })
+
+  const reponseBooksWithUserAndLike = await Promise.all(booksWithUserAndLike)
+
+  return { ...booksResponse, items: reponseBooksWithUserAndLike }
 }
 
 const createBookService = async (newBook: INewBook) => {
