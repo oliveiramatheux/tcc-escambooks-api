@@ -39,9 +39,14 @@ const validateParamsUpdateUser = celebrate({
   })
 })
 
+const validateParamsGetBooksByUserId = celebrate({
+  ...validateParamsId
+})
+
 export {
   validateParamsGetUserById,
   validateParamsCreateUser,
   validateParamsDeleteUserById,
-  validateParamsUpdateUser
+  validateParamsUpdateUser,
+  validateParamsGetBooksByUserId
 }

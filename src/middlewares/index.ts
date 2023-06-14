@@ -2,7 +2,8 @@ import {
   validateParamsGetUserById,
   validateParamsCreateUser,
   validateParamsDeleteUserById,
-  validateParamsUpdateUser
+  validateParamsUpdateUser,
+  validateParamsGetBooksByUserId
 } from './users'
 
 import {
@@ -54,5 +55,6 @@ export {
   validateParamsDeleteLikeById,
   validateParamsUpdateLike,
   validateParamsGetLikesByBookUserId,
-  validateParamsGetLikesByUserLikedId
+  validateParamsGetLikesByUserLikedId,
+  validateParamsGetBooksByUserId
 }
