@@ -15,7 +15,7 @@ const mockIdRequestUpdateUserById = {
 }
 
 const mockIUserResponse = {
-  _id: '60c365be4168d05c46a6c7be',
+  id: '60c365be4168d05c46a6c7be',
   name: 'teste',
   email: 'teste@teste.com',
   password: 'teste123',
@@ -31,7 +31,7 @@ const mockRequestCreateUser = {
 }
 
 const mockResponseCreateUser = {
-  _id: '60c365be4168d05c46a6c7be',
+  id: '60c365be4168d05c46a6c7be',
   name: 'teste',
   email: 'teste@teste.com',
   password: 'teste123',
@@ -46,7 +46,7 @@ const mockUpdateUserRequest = {
   birthDate: '12/12/2000'
 }
 const mockUpdateUserResponse = {
-  _id: '60c365be4168d05c46a6c7be',
+  id: '60c365be4168d05c46a6c7be',
   name: 'teste2',
   email: 'teste2@teste.com',
   password: 'teste123',
@@ -134,7 +134,7 @@ const mockGetBookByIdResponse = {
   imageName: 'teste',
   language: 'teste',
   previewLink: 'teste',
-  createdAt: 'teste'
+  date: 'teste'
 }
 
 const mockBookRequest = {
@@ -163,7 +163,7 @@ const mockBookResponse = {
   categories: ['teste'],
   imageUrl: 'teste',
   imageName: 'teste',
-  createdAt: 'teste',
+  date: 'teste',
   language: 'teste',
   previewLink: 'teste'
 }
@@ -180,7 +180,7 @@ const mockDeleteBookByIdResponse = {
   categories: ['teste'],
   imageUrl: 'teste',
   imageName: 'teste',
-  createdAt: 'teste',
+  date: 'teste',
   language: 'teste',
   previewLink: 'teste'
 }
@@ -201,7 +201,9 @@ const mockGetBooksByUserIdResponse = {
       imageName: 'teste',
       date: 'teste',
       language: 'teste',
-      previewLink: 'teste'
+      previewLink: 'teste',
+      userName: 'teste',
+      userEmail: 'teste'
     }
   ],
   totalItems: 1

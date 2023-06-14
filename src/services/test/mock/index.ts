@@ -15,7 +15,7 @@ const mockIdRequestUpdateUserById = {
 }
 
 const mockIUserResponse = {
-  _id: '60c365be4168d05c46a6c7be',
+  id: '60c365be4168d05c46a6c7be',
   name: 'teste',
   email: 'teste@teste.com',
   birthDate: '12/12/2000'
@@ -29,7 +29,7 @@ const mockRequestCreateUser = {
 }
 
 const mockResponseCreateUser = {
-  _id: '60c365be4168d05c46a6c7be',
+  id: '60c365be4168d05c46a6c7be',
   name: 'teste',
   email: 'teste@teste.com',
   birthDate: null
@@ -40,8 +40,9 @@ const mockUpdateUserRequest = {
   email: 'teste2@teste.com',
   birthDate: '12/12/2000'
 }
+
 const mockUpdateUserResponse = {
-  _id: '60c365be4168d05c46a6c7be',
+  id: '60c365be4168d05c46a6c7be',
   name: 'teste2',
   email: 'teste2@teste.com',
   birthDate: '12/12/2000'

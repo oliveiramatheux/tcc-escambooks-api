@@ -135,7 +135,8 @@ describe('test books repositories', () => {
       const { userId } = mockGetBooksByUserId
       const result = await getBooksByUserId(userId)
       expect(BookModel).toBeCalledTimes(1)
-      expect(BookModel).toBeCalledWith({ userId })
+      expect(BookModel).toBeCalledWith({ userId }, null,
+        { sort: { createdAt: 'desc' } })
       expect(result).toEqual(mockIBooksResponse)
     })
     it('should return null when is called with email send incorrect', async () => {
@@ -144,7 +145,8 @@ describe('test books repositories', () => {
       const { userId } = mockGetBooksByUserId
       const result = await getBooksByUserId(userId)
       expect(BookModel).toBeCalledTimes(1)
-      expect(BookModel).toBeCalledWith({ userId })
+      expect(BookModel).toBeCalledWith({ userId }, null,
+        { sort: { createdAt: 'desc' } })
       expect(result).toEqual(null)
     })
   })
