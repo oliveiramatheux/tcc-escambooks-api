@@ -1,4 +1,11 @@
-import { getUserById, createNewUser, deleteUserById, updateUserById, getUserByEmail, sendEmail } from '../repositories'
+import {
+  getUserById,
+  createNewUser,
+  deleteUserById,
+  updateUserById,
+  getUserByEmail,
+  sendEmail
+} from '../repositories'
 import { INewUser, IUserResponse } from '../models/users'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
@@ -8,11 +15,13 @@ import { contentTemplateEmailConfirmation } from './templates'
 import config from '../config'
 import Handlebars from 'handlebars'
 
-const templateEmailConfirmartion = Handlebars.compile(contentTemplateEmailConfirmation)
+const templateEmailConfirmartion = Handlebars.compile(
+  contentTemplateEmailConfirmation
+)
 
 const formatResponse = (response: IUserResponse) => {
   return {
-    _id: response._id,
+    id: response._id,
     name: response.name,
     email: response.email,
     birthDate: response.birthDate,
@@ -30,7 +39,9 @@ const getUser = async (id: string) => {
 }
 
 const createUser = async (newUser: INewUser) => {
-  const verifyEmailAlredyExist: IUserResponse = await getUserByEmail(newUser.email)
+  const verifyEmailAlredyExist: IUserResponse = await getUserByEmail(
+    newUser.email
+  )
 
   if (verifyEmailAlredyExist) {
     throw handleError(409, 'User email alredy exist')
@@ -42,12 +53,19 @@ const createUser = async (newUser: INewUser) => {
     throw handleError(400, 'An eror occured when create this user')
   }
 
-  const token = generateToken({ email: newUserResponse.email, secretToken: newUserResponse.secretToken })
+  const token = generateToken({
+    email: newUserResponse.email,
+    secretToken: newUserResponse.secretToken
+  })
 
   const template = {
     from: defaultEmailFrom,
     subject: 'Email de confirmação',
-    html: templateEmailConfirmartion({ url: config.applicationFrontUrl, userName: newUserResponse.name, userToken: token })
+    html: templateEmailConfirmartion({
+      url: config.applicationFrontUrl,
+      userName: newUserResponse.name,
+      userToken: token
+    })
   }
   sendEmail(newUserResponse, template)
 
@@ -68,12 +86,17 @@ const updateUser = async (id: string, newUser: INewUser) => {
     throw handleError(404, 'User not exist')
   }
 
-  const verifyEmailAlredyExist: IUserResponse = await getUserByEmail(newUser.email)
+  const verifyEmailAlredyExist: IUserResponse = await getUserByEmail(
+    newUser.email
+  )
   if (verifyEmailAlredyExist) {
     throw handleError(409, 'User email alredy exist')
   }
 
-  const newUserResponse: IUserResponse = await updateUserById(id, objectFormatter(newUser) as INewUser)
+  const newUserResponse: IUserResponse = await updateUserById(
+    id,
+    objectFormatter(newUser) as INewUser
+  )
   if (!newUserResponse) {
     throw handleError(400, 'An error occured when update this user')
   }

@@ -6,10 +6,7 @@ import {
   getUserByEmail
 } from './users'
 
-import {
-  authenticateUserByEmailAndPassword,
-  sendEmail
-} from './auth'
+import { authenticateUserByEmailAndPassword, sendEmail } from './auth'
 
 import {
   getInfoBookByIsbn,
@@ -18,7 +15,8 @@ import {
   deleteBookById,
   getBooksByUserId,
   getAllBooks,
-  updateBookById
+  updateBookById,
+  getBooksByIds
 } from './books'
 
 import {
@@ -52,5 +50,6 @@ export {
   updateLikeById,
   getLikesByBookUserId,
   getLikesByUserLikedId,
-  getLikeByUserLikedIdAndBookId
+  getLikeByUserLikedIdAndBookId,
+  getBooksByIds
 }

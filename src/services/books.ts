@@ -1,4 +1,11 @@
-import { IBookResponse, INewBook, IUpdateBook, IBookExternalApiResponse } from '../models/books'
+import {
+  IBookResponse,
+  INewBook,
+  IUpdateBook,
+  IBookExternalApiResponse,
+  BooksReponse,
+  BookWithUserAndLike
+} from '../models/books'
 import {
   getInfoBookByIsbn,
   getBookById,
@@ -7,15 +14,29 @@ import {
   getBooksByUserId,
   updateBookById,
   getAllBooks,
-  getLikeByUserLikedIdAndBookId
+  getLikeByUserLikedIdAndBookId,
+  getLikesByUserLikedId,
+  getBooksByIds
 } from '../repositories'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
 import { getUser } from './users'
 
 const formatBookResponse = ({
-  _id, userId, title, authors, publisher, publishedDate, description, pageCount, categories,
-  imageUrl, imageName, language, previewLink, createdAt
+  _id,
+  userId,
+  title,
+  authors,
+  publisher,
+  publishedDate,
+  description,
+  pageCount,
+  categories,
+  imageUrl,
+  imageName,
+  language,
+  previewLink,
+  createdAt
 }: IBookResponse) => ({
   id: _id,
   userId,
@@ -30,52 +51,59 @@ const formatBookResponse = ({
   imageName,
   language,
   previewLink,
-  createdAt
+  date: createdAt
 })
 
-const formatBooksResponse = (books: IBookResponse[]) => {
-  return (
-    {
-      items:
-        books.map(book => {
-          return ({
-            id: book._id,
-            userId: book.userId,
-            title: book.title,
-            authors: book.authors,
-            publisher: book.publisher,
-            publishedDate: book.publishedDate,
-            description: book.description,
-            pageCount: book.pageCount,
-            categories: book.categories,
-            imageUrl: book.imageUrl,
-            imageName: book.imageName,
-            language: book.language,
-            previewLink: book.previewLink,
-            date: book.createdAt
-          })
-        }),
-      totalItems: books.length
+const formatBooksResponse = async (
+  userId: string,
+  books: IBookResponse[]
+): Promise<BooksReponse> => {
+  const formatedBooks = books.map(formatBookResponse)
+
+  const booksWithUser = formatedBooks.map(async (book) => {
+    const user = await getUser(book.userId)
+    return {
+      ...book,
+      userName: user.name,
+      userEmail: user.email,
+      userImageUrl: user.imageUrl
     }
+  })
+
+  const responseBooksWithUser = await Promise.all(booksWithUser)
+
+  const booksWithUserAndLike = responseBooksWithUser.map(async (book) => {
+    const like = await getLikeByUserLikedIdAndBookId(userId, book.id)
+    if (like && like.bookId === String(book.id)) {
+      return { ...book, alreadyLike: { likeId: like._id } }
+    }
+    return book
+  })
+
+  const reponseBooksWithUserAndLike: BookWithUserAndLike[] = await Promise.all(
+    booksWithUserAndLike
   )
+
+  return {
+    items: reponseBooksWithUserAndLike,
+    totalItems: books.length
+  }
 }
 
 const formatExternalBookResponse = (book: IBookExternalApiResponse) => {
-  return (
-    {
-      title: book.title,
-      authors: book.authors,
-      publisher: book.publisher,
-      publishedDate: book.publishedDate,
-      description: book.description,
-      pageCount: book.pageCount,
-      categories: book.categories,
-      imageUrl: book.imageUrl,
-      imageName: book.imageName,
-      language: book.language,
-      previewLink: book.previewLink
-    }
-  )
+  return {
+    title: book.title,
+    authors: book.authors,
+    publisher: book.publisher,
+    publishedDate: book.publishedDate,
+    description: book.description,
+    pageCount: book.pageCount,
+    categories: book.categories,
+    imageUrl: book.imageUrl,
+    imageName: book.imageName,
+    language: book.language,
+    previewLink: book.previewLink
+  }
 }
 
 const getInfoBookByIsbnService = async (isbn: string) => {
@@ -102,14 +130,29 @@ const getBookByIdService = async (id: string) => {
   return formatBookResponse(bookResponse)
 }
 
-const getBooksByUserIdService = async (userId: string) => {
+const getBooksByUserIdService = async (
+  userId: string,
+  likesFromUserId: string
+) => {
   const bookResponse = await getBooksByUserId(userId)
 
   if (!bookResponse.length) {
     throw handleError(404, 'This user not have books')
   }
 
-  return formatBooksResponse(bookResponse)
+  return await formatBooksResponse(likesFromUserId, bookResponse)
+}
+
+const getLikedBooksService = async (userId: string) => {
+  const likesResponse = await getLikesByUserLikedId(userId)
+  const booksIds = likesResponse.map((like) => like.bookId)
+  const bookResponse = await getBooksByIds(booksIds)
+
+  if (!bookResponse.length) {
+    throw handleError(404, 'This user not have books')
+  }
+
+  return await formatBooksResponse(userId, bookResponse)
 }
 
 const getAllBooksService = async (userId: string) => {
@@ -119,24 +162,7 @@ const getAllBooksService = async (userId: string) => {
     throw handleError(404, 'Not have any books')
   }
 
-  const booksResponse = formatBooksResponse(books)
-
-  const booksWithUser = booksResponse.items.map(async book => {
-    const user = await getUser(book.userId)
-    return { ...book, userName: user.name, userEmail: user.email }
-  })
-
-  const responseBooksWithUser = await Promise.all(booksWithUser)
-
-  const booksWithUserAndLike = responseBooksWithUser.map(async book => {
-    const like = await getLikeByUserLikedIdAndBookId(userId, book.id)
-    if (like && like.bookId === String(book.id)) return { ...book, alreadyLike: { likeId: like._id } }
-    return book
-  })
-
-  const reponseBooksWithUserAndLike = await Promise.all(booksWithUserAndLike)
-
-  return { ...booksResponse, items: reponseBooksWithUserAndLike }
+  return await formatBooksResponse(userId, books)
 }
 
 const createBookService = async (newBook: INewBook) => {
@@ -164,7 +190,11 @@ const deleteBookByIdService = async (id: string, userId: string) => {
   return formatBookResponse(bookDeleteResponse)
 }
 
-const updateBookByIdService = async (id: string, newBook: IUpdateBook, userId: string) => {
+const updateBookByIdService = async (
+  id: string,
+  newBook: IUpdateBook,
+  userId: string
+) => {
   const bookResponse = await getBookById(id)
 
   if (!bookResponse) {
@@ -175,7 +205,10 @@ const updateBookByIdService = async (id: string, newBook: IUpdateBook, userId: s
     throw handleError(401, 'This user not have permission of update this book')
   }
 
-  const bookUpdateResponse = await updateBookById(id, objectFormatter(newBook) as IUpdateBook)
+  const bookUpdateResponse = await updateBookById(
+    id,
+    objectFormatter(newBook) as IUpdateBook
+  )
   return formatBookResponse(bookUpdateResponse)
 }
 
@@ -186,5 +219,6 @@ export {
   deleteBookByIdService,
   getBooksByUserIdService,
   updateBookByIdService,
-  getAllBooksService
+  getAllBooksService,
+  getLikedBooksService
 }

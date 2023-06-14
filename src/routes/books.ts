@@ -12,16 +12,34 @@ import {
 const router = Router()
 router.use(verifyToken)
 
-router.get('/isbn/:isbn', validateParamsGetInfoBookByIsbn, booksController.getInfoBookByIsbnController)
+router.get(
+  '/isbn/:isbn',
+  validateParamsGetInfoBookByIsbn,
+  booksController.getInfoBookByIsbnController
+)
 
 router.get('/list', verifyToken, booksController.getAllBooksController)
 
-router.get('/:id', validateParamsGetBookById, booksController.getBookByIdController)
+router.get('/liked', verifyToken, booksController.getLikedBooksController)
+
+router.get(
+  '/:id',
+  validateParamsGetBookById,
+  booksController.getBookByIdController
+)
 
 router.post('/', validateParamsCreateBook, booksController.createBookController)
 
-router.delete('/:id', validateParamsDeleteBookById, booksController.deleteBookByIdController)
+router.delete(
+  '/:id',
+  validateParamsDeleteBookById,
+  booksController.deleteBookByIdController
+)
 
-router.patch('/:id', validateParamsUpdateBookById, booksController.updateBookByIdController)
+router.patch(
+  '/:id',
+  validateParamsUpdateBookById,
+  booksController.updateBookByIdController
+)
 
 export default router
