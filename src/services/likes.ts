@@ -67,10 +67,6 @@ const deleteLikeService = async (id: string) => {
 const deleteLikesByBookIdService = async (bookId: string) => {
   const likes = await deleteLikesByBookId(bookId)
 
-  if (likes.deletedCount === 0) {
-    throw handleError(404, 'No likes found')
-  }
-
   return { totalItemsDeleted: likes.deletedCount }
 }
 
