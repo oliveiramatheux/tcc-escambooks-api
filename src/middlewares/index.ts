@@ -30,7 +30,8 @@ import {
   validateParamsDeleteLikeById,
   validateParamsUpdateLike,
   validateParamsGetLikesByBookUserId,
-  validateParamsGetLikesByUserLikedId
+  validateParamsGetLikesByUserLikedId,
+  validateParamsDeleteLikesByBookId
 } from './likes'
 
 export {
@@ -56,5 +57,6 @@ export {
   validateParamsUpdateLike,
   validateParamsGetLikesByBookUserId,
   validateParamsGetLikesByUserLikedId,
-  validateParamsGetBooksByUserId
+  validateParamsGetBooksByUserId,
+  validateParamsDeleteLikesByBookId
 }

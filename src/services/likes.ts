@@ -1,4 +1,4 @@
-import { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId } from '../repositories'
+import { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, deleteLikesByBookId } from '../repositories'
 import { ILike, ILikeResponse } from '../models'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
@@ -64,6 +64,16 @@ const deleteLikeService = async (id: string) => {
   return formatResponse(like)
 }
 
+const deleteLikesByBookIdService = async (bookId: string) => {
+  const likes = await deleteLikesByBookId(bookId)
+
+  if (likes.deletedCount === 0) {
+    throw handleError(404, 'No likes found')
+  }
+
+  return { totalItemsDeleted: likes.deletedCount }
+}
+
 const updateLikeByIdService = async (id: string, like: ILike) => {
   const likeResponse = await updateLikeById(id, objectFormatter(like) as ILike)
   if (!likeResponse) {
@@ -88,4 +98,4 @@ const getLikesByUserLikedIdService = async (userLikedId: string) => {
   return formatLikesResponse(likes)
 }
 
-export { getLikeByIdService, createLikeService, deleteLikeService, updateLikeByIdService, getLikesByBookUserIdService, getLikesByUserLikedIdService }
+export { getLikeByIdService, createLikeService, deleteLikeService, updateLikeByIdService, getLikesByBookUserIdService, getLikesByUserLikedIdService, deleteLikesByBookIdService }

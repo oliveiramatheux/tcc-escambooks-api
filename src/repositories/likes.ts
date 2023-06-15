@@ -30,4 +30,8 @@ const getLikeByUserLikedIdAndBookId = async (userLikedId: string, bookId: string
   return await Like.findOne<ILikeResponse>({ userLikedId, bookId })
 }
 
-export { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, getLikeByUserLikedIdAndBookId }
+const deleteLikesByBookId = async (bookId: string) => {
+  return await Like.deleteMany({ bookId })
+}
+
+export { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, getLikeByUserLikedIdAndBookId, deleteLikesByBookId }

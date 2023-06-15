@@ -52,11 +52,18 @@ const validateParamsGetLikesByUserLikedId = celebrate({
   })
 })
 
+const validateParamsDeleteLikesByBookId = celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    bookId: myJoiObjectId().required()
+  })
+})
+
 export {
   validateParamsGetLikeById,
   validateParamsCreateLike,
   validateParamsDeleteLikeById,
   validateParamsUpdateLike,
   validateParamsGetLikesByBookUserId,
-  validateParamsGetLikesByUserLikedId
+  validateParamsGetLikesByUserLikedId,
+  validateParamsDeleteLikesByBookId
 }

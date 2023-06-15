@@ -20,6 +20,7 @@ import {
 } from '../repositories'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
+import { deleteLikesByBookIdService } from './likes'
 import { getUser } from './users'
 
 const formatBookResponse = ({
@@ -187,6 +188,8 @@ const deleteBookByIdService = async (id: string, userId: string) => {
   }
 
   const bookDeleteResponse = await deleteBookById(id)
+  await deleteLikesByBookIdService(id)
+
   return formatBookResponse(bookDeleteResponse)
 }
 
