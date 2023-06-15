@@ -5,7 +5,8 @@ import {
   deleteLikeService,
   updateLikeByIdService,
   getLikesByBookUserIdService,
-  getLikesByUserLikedIdService
+  getLikesByUserLikedIdService,
+  deleteLikesByBookIdService
 } from '../services'
 import asyncHandler from 'express-async-handler'
 
@@ -38,6 +39,12 @@ const createLikeController = asyncHandler(async (request: Request, response: Res
 const deleteLikeController = asyncHandler(async (request: Request, response: Response) => {
   const { id } = request.params
   const like = await deleteLikeService(id)
+  response.status(200).send(like)
+})
+
+const deleteLikesByBookIdController = asyncHandler(async (request: Request, response: Response) => {
+  const { bookId } = request.params
+  const like = await deleteLikesByBookIdService(bookId)
   response.status(200).send(like)
 })
 
@@ -74,4 +81,4 @@ const getLikesByUserLikedIdController = asyncHandler(async (request: Request, re
   response.status(200).send(likes)
 })
 
-export { getLikeByIdController, createLikeController, deleteLikeController, updateLikeByIdController, getLikesByBookUserIdController, getLikesByUserLikedIdController }
+export { getLikeByIdController, createLikeController, deleteLikeController, updateLikeByIdController, getLikesByBookUserIdController, getLikesByUserLikedIdController, deleteLikesByBookIdController }

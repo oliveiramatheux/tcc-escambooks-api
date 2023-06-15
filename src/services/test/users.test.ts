@@ -35,7 +35,7 @@ describe('test users services', () => {
   describe('test getUser function', () => {
     it('should return 200 when is called with user id send correct', async () => {
       const mockGetUserById = getUserById as jest.Mock
-      mockGetUserById.mockResolvedValue(mockIUserResponse)
+      mockGetUserById.mockResolvedValue({ ...mockIUserResponse, _id: mockIUserResponse.id })
       const { id } = mockIdRequestGetUserById
       const result = await getUser(id)
       expect(mockGetUserById).toBeCalledTimes(1)
@@ -56,7 +56,7 @@ describe('test users services', () => {
   describe('test createUser function', () => {
     it('should return 201 when is called with body send correct', async () => {
       const mockCreateNewUser = createNewUser as jest.Mock
-      mockCreateNewUser.mockResolvedValue(mockResponseCreateUser)
+      mockCreateNewUser.mockResolvedValue({ ...mockResponseCreateUser, _id: mockResponseCreateUser.id })
 
       const mockSendEmailConfirmService = sendEmail as jest.MockedFunction<typeof sendEmail>
       mockSendEmailConfirmService.mockResolvedValue()
@@ -102,7 +102,7 @@ describe('test users services', () => {
   describe('test deleteUser function', () => {
     it('should return 200 when is called with user id send correct', async () => {
       const mockDeleteUserById = deleteUserById as jest.Mock
-      mockDeleteUserById.mockResolvedValue(mockIUserResponse)
+      mockDeleteUserById.mockResolvedValue({ ...mockIUserResponse, _id: mockIUserResponse.id })
       const { id } = mockIdRequestDeleteUserById
       const result = await deleteUser(id)
       expect(mockDeleteUserById).toBeCalledTimes(1)
@@ -129,7 +129,7 @@ describe('test users services', () => {
       mockVerifyEmailAlredyExist.mockResolvedValue(null)
 
       const mockUpdateUser = updateUserById as jest.Mock
-      mockUpdateUser.mockResolvedValue(mockUpdateUserResponse)
+      mockUpdateUser.mockResolvedValue({ ...mockUpdateUserResponse, _id: mockUpdateUserResponse.id })
 
       const { id } = mockIdRequestUpdateUserById
       const result = await updateUser(id, mockUpdateUserRequest)

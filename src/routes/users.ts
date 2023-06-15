@@ -5,7 +5,8 @@ import {
   validateParamsCreateUser,
   validateParamsDeleteUserById,
   validateParamsUpdateUser,
-  verifyToken
+  verifyToken,
+  validateParamsGetBooksByUserId
 } from '../middlewares'
 
 const router = Router()
@@ -34,6 +35,7 @@ router.patch(
 router.get(
   '/:id/books',
   verifyToken,
+  validateParamsGetBooksByUserId,
   booksController.getBooksByUserIdController
 )
 

@@ -117,8 +117,9 @@ describe('test books controller', () => {
     it('should return 200 when is called with body send correct', async () => {
       const mockedBook = getBooksByUserIdService as jest.MockedFunction<typeof getBooksByUserIdService>
       mockedBook.mockResolvedValue(mockGetBooksByUserIdResponse)
+      const { id } = mockBookId
       const response = await supertest(server)
-        .get('/api/users/books/list').set({ Authorization: `Bearer ${generateDefaultToken}` })
+        .get(`/api/users/${id}/books`).set({ Authorization: `Bearer ${generateDefaultToken}` })
 
       expect(response.status).toBe(200)
       expect(response.body).toEqual(mockGetBooksByUserIdResponse)
@@ -126,8 +127,9 @@ describe('test books controller', () => {
     it('should return 500 when is called with body send correct but server error', async () => {
       const mockedBook = getBooksByUserIdService as jest.MockedFunction<typeof getBooksByUserIdService>
       mockedBook.mockRejectedValue(new Error('unknown server error'))
+      const { id } = mockBookId
       const response = await supertest(server)
-        .get('/api/users/books/list').set({ Authorization: `Bearer ${generateDefaultToken}` })
+        .get(`/api/users/${id}/books`).set({ Authorization: `Bearer ${generateDefaultToken}` })
 
       expect(response.status).toBe(500)
       expect(response.text).toBe('Error: unknown server error')

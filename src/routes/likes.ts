@@ -7,7 +7,8 @@ import {
   validateParamsDeleteLikeById,
   validateParamsUpdateLike,
   validateParamsGetLikesByBookUserId,
-  validateParamsGetLikesByUserLikedId
+  validateParamsGetLikesByUserLikedId,
+  validateParamsDeleteLikesByBookId
 } from '../middlewares'
 
 const router = Router()
@@ -21,6 +22,8 @@ router.get('/:id', verifyToken, validateParamsGetLikeById, likesController.getLi
 router.post('/', verifyToken, validateParamsCreateLike, likesController.createLikeController)
 
 router.delete('/:id', verifyToken, validateParamsDeleteLikeById, likesController.deleteLikeController)
+
+router.delete('/bookId/:bookId', verifyToken, validateParamsDeleteLikesByBookId, likesController.deleteLikesByBookIdController)
 
 router.patch('/:id', verifyToken, validateParamsUpdateLike, likesController.updateLikeByIdController)
 
