@@ -16,7 +16,8 @@ import {
   getAllBooks,
   getLikeByUserLikedIdAndBookId,
   getLikesByUserLikedId,
-  getBooksByIds
+  getBooksByIds,
+  getBooksByTitle
 } from '../repositories'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
@@ -215,6 +216,16 @@ const updateBookByIdService = async (
   return formatBookResponse(bookUpdateResponse)
 }
 
+const getBooksByTitleService = async (userId: string, title: string) => {
+  const books = await getBooksByTitle(title)
+
+  if (!books.length) {
+    throw handleError(404, 'Not have books with this title')
+  }
+
+  return await formatBooksResponse(userId, books)
+}
+
 export {
   getInfoBookByIsbnService,
   getBookByIdService,
@@ -223,5 +234,6 @@ export {
   getBooksByUserIdService,
   updateBookByIdService,
   getAllBooksService,
-  getLikedBooksService
+  getLikedBooksService,
+  getBooksByTitleService
 }

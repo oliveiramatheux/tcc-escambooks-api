@@ -55,6 +55,14 @@ const updateBookById = async (id: string, newBook: IUpdateBook) => {
   return book
 }
 
+const getBooksByTitle = async (title: string) => {
+  try {
+    return await Book.find<IBookResponse>({ title: { $regex: '.*' + title + '.*', $options: 'i' } })
+  } catch {
+    return []
+  }
+}
+
 export {
   getInfoBookByIsbn,
   getBookById,
@@ -63,5 +71,6 @@ export {
   getBooksByUserId,
   getAllBooks,
   updateBookById,
-  getBooksByIds
+  getBooksByIds,
+  getBooksByTitle
 }
