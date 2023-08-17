@@ -21,7 +21,8 @@ import {
   validateParamsGetBookById,
   validateParamsCreateBook,
   validateParamsDeleteBookById,
-  validateParamsUpdateBookById
+  validateParamsUpdateBookById,
+  validateParamsGetBooksByTitle
 } from './books'
 
 import {
@@ -58,5 +59,6 @@ export {
   validateParamsGetLikesByBookUserId,
   validateParamsGetLikesByUserLikedId,
   validateParamsGetBooksByUserId,
-  validateParamsDeleteLikesByBookId
+  validateParamsDeleteLikesByBookId,
+  validateParamsGetBooksByTitle
 }

@@ -56,10 +56,17 @@ const validateParamsUpdateBookById = celebrate({
   })
 })
 
+const validateParamsGetBooksByTitle = celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    title: Joi.string().required()
+  })
+})
+
 export {
   validateParamsGetInfoBookByIsbn,
   validateParamsGetBookById,
   validateParamsCreateBook,
   validateParamsDeleteBookById,
-  validateParamsUpdateBookById
+  validateParamsUpdateBookById,
+  validateParamsGetBooksByTitle
 }

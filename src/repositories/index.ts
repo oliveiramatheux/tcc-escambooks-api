@@ -16,7 +16,8 @@ import {
   getBooksByUserId,
   getAllBooks,
   updateBookById,
-  getBooksByIds
+  getBooksByIds,
+  getBooksByTitle
 } from './books'
 
 import {
@@ -53,5 +54,6 @@ export {
   getLikesByUserLikedId,
   getLikeByUserLikedIdAndBookId,
   getBooksByIds,
-  deleteLikesByBookId
+  deleteLikesByBookId,
+  getBooksByTitle
 }

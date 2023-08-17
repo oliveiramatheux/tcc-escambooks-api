@@ -18,7 +18,8 @@ import {
   getBooksByUserIdService,
   updateBookByIdService,
   getAllBooksService,
-  getLikedBooksService
+  getLikedBooksService,
+  getBooksByTitleService
 } from './books'
 
 import {
@@ -57,5 +58,6 @@ export {
   getLikesByBookUserIdService,
   getLikesByUserLikedIdService,
   getLikedBooksService,
-  deleteLikesByBookIdService
+  deleteLikesByBookIdService,
+  getBooksByTitleService
 }
