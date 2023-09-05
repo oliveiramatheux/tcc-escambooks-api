@@ -31,6 +31,8 @@ import {
   deleteLikesByBookId
 } from './likes'
 
+export * from './books'
+
 export {
   getUserById,
   createNewUser,

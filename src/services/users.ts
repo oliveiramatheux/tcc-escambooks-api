@@ -4,7 +4,9 @@ import {
   deleteUserById,
   updateUserById,
   getUserByEmail,
-  sendEmail
+  sendEmail,
+  getBooksByUserId,
+  deleteBooksByUserId
 } from '../repositories'
 import { INewUser, IUserResponse } from '../models/users'
 import { handleError } from '../utils/errors'
@@ -14,6 +16,7 @@ import { generateToken } from '../services/auth'
 import { contentTemplateEmailConfirmation } from './templates'
 import config from '../config'
 import Handlebars from 'handlebars'
+import { deleteLikesByBookIdService } from './likes'
 
 const templateEmailConfirmartion = Handlebars.compile(
   contentTemplateEmailConfirmation
@@ -73,11 +76,24 @@ const createUser = async (newUser: INewUser) => {
 }
 
 const deleteUser = async (id: string) => {
-  const userResponse: IUserResponse = await deleteUserById(id)
+  const userResponse: IUserResponse = await getUserById(id)
   if (!userResponse) {
     throw handleError(404, 'User not found')
   }
-  return formatResponse(userResponse)
+
+  const userBooks = await getBooksByUserId(userResponse._id)
+
+  await deleteBooksByUserId(userResponse._id)
+
+  const deleteBookLikes = userBooks.map(async (book) => {
+    await deleteLikesByBookIdService(book._id)
+  })
+
+  await Promise.all(deleteBookLikes)
+
+  const userDeletedResponse: IUserResponse = await deleteUserById(id)
+
+  return formatResponse(userDeletedResponse)
 }
 
 const updateUser = async (id: string, newUser: INewUser) => {
