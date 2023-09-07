@@ -6,7 +6,9 @@ import {
   getUserByEmail,
   sendEmail,
   getBooksByUserId,
-  deleteBooksByUserId
+  deleteBooksByUserId,
+  deleteLikesFromBookUserId,
+  deleteLikesFromUserLikedId
 } from '../repositories'
 import { INewUser, IUserResponse } from '../models/users'
 import { handleError } from '../utils/errors'
@@ -16,7 +18,11 @@ import { generateToken } from '../services/auth'
 import { contentTemplateEmailConfirmation } from './templates'
 import config from '../config'
 import Handlebars from 'handlebars'
-import { deleteLikesByBookIdService } from './likes'
+
+interface UserBookImageInfo {
+  bookId: string
+  bookImageName: string
+}
 
 const templateEmailConfirmartion = Handlebars.compile(
   contentTemplateEmailConfirmation
@@ -82,18 +88,15 @@ const deleteUser = async (id: string) => {
   }
 
   const userBooks = await getBooksByUserId(userResponse._id)
+  const userBooksImagesInfos: UserBookImageInfo[] = userBooks.filter(book => !!book.imageName).map(book => ({ bookId: book._id, bookImageName: book.imageName }))
 
   await deleteBooksByUserId(userResponse._id)
-
-  const deleteBookLikes = userBooks.map(async (book) => {
-    await deleteLikesByBookIdService(book._id)
-  })
-
-  await Promise.all(deleteBookLikes)
+  await deleteLikesFromBookUserId(userResponse._id)
+  await deleteLikesFromUserLikedId(userResponse._id)
 
   const userDeletedResponse: IUserResponse = await deleteUserById(id)
 
-  return formatResponse(userDeletedResponse)
+  return { ...formatResponse(userDeletedResponse), userBooksImages: userBooksImagesInfos }
 }
 
 const updateUser = async (id: string, newUser: INewUser) => {

@@ -34,4 +34,24 @@ const deleteLikesByBookId = async (bookId: string) => {
   return await Like.deleteMany({ bookId })
 }
 
-export { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, getLikeByUserLikedIdAndBookId, deleteLikesByBookId }
+const deleteLikesFromBookUserId = async (bookUserId: string) => {
+  try {
+    return await Like.deleteMany({ bookUserId })
+  } catch {
+    return null
+  }
+}
+
+const deleteLikesFromUserLikedId = async (userLikedId: string) => {
+  try {
+    return await Like.deleteMany({ userLikedId })
+  } catch {
+    return null
+  }
+}
+
+export {
+  getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, getLikeByUserLikedIdAndBookId, deleteLikesByBookId,
+  deleteLikesFromBookUserId,
+  deleteLikesFromUserLikedId
+}
