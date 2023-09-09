@@ -63,6 +63,14 @@ const getBooksByTitle = async (title: string) => {
   }
 }
 
+const deleteBooksByUserId = async (userId: string) => {
+  try {
+    return await Book.deleteMany({ userId })
+  } catch {
+    return null
+  }
+}
+
 export {
   getInfoBookByIsbn,
   getBookById,
@@ -72,5 +80,6 @@ export {
   getAllBooks,
   updateBookById,
   getBooksByIds,
-  getBooksByTitle
+  getBooksByTitle,
+  deleteBooksByUserId
 }
