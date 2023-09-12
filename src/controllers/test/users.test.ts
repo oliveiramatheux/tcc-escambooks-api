@@ -64,13 +64,13 @@ describe('test users controller', () => {
   describe('test deleteUserByIdController function', () => {
     it('should return 200 when is called with user id send correct', async () => {
       const mockDeleteUser = deleteUser as jest.MockedFunction<typeof deleteUser>
-      mockDeleteUser.mockResolvedValue(mockIUserResponse)
+      mockDeleteUser.mockResolvedValue({ ...mockIUserResponse, userBooksImages: [] })
       const { id } = mockIdRequestDeleteUserById
       const response = await supertest(server)
         .delete(`/api/users/${id}`)
 
       expect(response.status).toBe(200)
-      expect(response.body).toEqual(mockIUserResponse)
+      expect(response.body).toEqual({ ...mockIUserResponse, userBooksImages: [] })
     })
     it('should return 500 when is called with user id send correct but server error', async () => {
       const mockDeleteUser = deleteUser as jest.MockedFunction<typeof deleteUser>

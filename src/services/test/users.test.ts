@@ -21,7 +21,8 @@ import {
   deleteUserById,
   updateUserById,
   getUserByEmail,
-  sendEmail
+  sendEmail,
+  getBooksByUserId
 } from '../../repositories'
 
 jest.mock('../../repositories')
@@ -101,22 +102,26 @@ describe('test users services', () => {
 
   describe('test deleteUser function', () => {
     it('should return 200 when is called with user id send correct', async () => {
+      const mockGetUserById = getUserById as jest.Mock
+      mockGetUserById.mockResolvedValue({ ...mockIUserResponse, _id: mockIUserResponse.id })
       const mockDeleteUserById = deleteUserById as jest.Mock
       mockDeleteUserById.mockResolvedValue({ ...mockIUserResponse, _id: mockIUserResponse.id })
+      const mockGetBooksByUserId = getBooksByUserId as jest.Mock
+      mockGetBooksByUserId.mockResolvedValue([])
       const { id } = mockIdRequestDeleteUserById
       const result = await deleteUser(id)
       expect(mockDeleteUserById).toBeCalledTimes(1)
       expect(mockDeleteUserById).toBeCalledWith(id)
-      expect(result).toEqual(mockIUserResponse)
+      expect(result).toEqual({ ...mockIUserResponse, userBooksImages: [] })
     })
     it('should return empty body when is called with user id send correct but not found', async () => {
-      const mockDeleteUserById = deleteUserById as jest.Mock
-      mockDeleteUserById.mockResolvedValue(null)
+      const mockGetUserById = getUserById as jest.Mock
+      mockGetUserById.mockResolvedValue(null)
       const { id } = mockIdRequestDeleteUserById
 
       expect(async () => await deleteUser(id)).rejects.toThrowError('User not found')
-      expect(mockDeleteUserById).toBeCalledTimes(1)
-      expect(mockDeleteUserById).toBeCalledWith(id)
+      expect(mockGetUserById).toBeCalledTimes(1)
+      expect(mockGetUserById).toBeCalledWith(id)
     })
   })
 
