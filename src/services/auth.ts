@@ -41,6 +41,7 @@ export interface UserAuthenticateResponse {
   password?: string
   active?: boolean
   imageUrl?: string
+  admin?: boolean
 }
 
 export interface UserSendEmail {
@@ -63,6 +64,7 @@ export interface GenerateTokenParams {
   email: string
   secretToken: string
   id: string
+  admin?: boolean
 }
 
 const generateToken = (generateTokenParams: Partial<GenerateTokenParams>) =>
@@ -84,13 +86,15 @@ const verifyTokenAndEmail = (token: string) => {
 
 const formatResponse = (
   { _id, name, email, imageUrl }: UserAuthenticateResponse,
-  token: string
+  token: string,
+  adminToken?: string
 ) => ({
   _id,
   name,
   email,
   token,
-  imageUrl
+  imageUrl,
+  adminToken
 })
 
 const formatResponseVerifyEmailUser = (response: IUserResponse) => ({
@@ -115,6 +119,15 @@ const authenticateUserService = async (user: UserAuthenticate) => {
     throw handleError(400, 'Invalid password')
   }
   const token = generateToken({ id: userResponse._id })
+
+  if (userResponse.admin) {
+    const adminToken = generateToken({
+      id: userResponse._id,
+      admin: userResponse.admin
+    })
+
+    return formatResponse(userResponse, token, adminToken)
+  }
 
   return formatResponse(userResponse, token)
 }
