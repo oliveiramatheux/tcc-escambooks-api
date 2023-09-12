@@ -1,3 +1,4 @@
+import http from 'http'
 import express from 'express'
 import router from './routes'
 import cors from 'cors'
@@ -18,4 +19,6 @@ server.use('/docs', swagger.serve, swagger.setup(swaggerDocument))
 server.use(errors())
 server.use(asyncHandlerError)
 
-export default server
+const httpServer = http.createServer(server)
+
+export default httpServer

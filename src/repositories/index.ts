@@ -28,7 +28,8 @@ import {
   getLikesByBookUserId,
   getLikesByUserLikedId,
   getLikeByUserLikedIdAndBookId,
-  deleteLikesByBookId
+  deleteLikesByBookId,
+  likeReceivedNotification
 } from './likes'
 
 export * from './books'
@@ -58,5 +59,6 @@ export {
   getLikeByUserLikedIdAndBookId,
   getBooksByIds,
   deleteLikesByBookId,
-  getBooksByTitle
+  getBooksByTitle,
+  likeReceivedNotification
 }

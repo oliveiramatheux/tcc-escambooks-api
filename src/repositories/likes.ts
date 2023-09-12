@@ -1,4 +1,6 @@
+import { ILikeFormatedResponse } from 'services/likes'
 import { Like, ILike, ILikeResponse } from '../models'
+import { emitEvent } from './event'
 
 const getLikeById = async (id: string) => {
   return await Like.findById<ILikeResponse>({ _id: id })
@@ -8,8 +10,18 @@ const createLike = async (like: ILike) => {
   return await Like.create<ILikeResponse>(like)
 }
 
+const likeReceivedNotification = (like: ILikeFormatedResponse) => {
+  const { bookUserId } = like
+  emitEvent(`like-received-${bookUserId}`, like)
+}
+
 const deleteLike = async (id: string) => {
   return await Like.findByIdAndRemove<ILikeResponse>({ _id: id })
+}
+
+const likeDeletedNotification = (like: ILikeFormatedResponse) => {
+  const { bookUserId } = like
+  emitEvent(`like-deleted-${bookUserId}`, like)
 }
 
 const updateLikeById = async (id: string, like: ILike) => {
@@ -51,7 +63,16 @@ const deleteLikesFromUserLikedId = async (userLikedId: string) => {
 }
 
 export {
-  getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, getLikeByUserLikedIdAndBookId, deleteLikesByBookId,
+  getLikeById,
+  createLike,
+  deleteLike,
+  updateLikeById,
+  getLikesByBookUserId,
+  getLikesByUserLikedId,
+  getLikeByUserLikedIdAndBookId,
+  deleteLikesByBookId,
   deleteLikesFromBookUserId,
-  deleteLikesFromUserLikedId
+  deleteLikesFromUserLikedId,
+  likeReceivedNotification,
+  likeDeletedNotification
 }
