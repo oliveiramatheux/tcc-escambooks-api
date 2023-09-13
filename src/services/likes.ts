@@ -1,9 +1,20 @@
-import { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, deleteLikesByBookId } from '../repositories'
+import { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, deleteLikesByBookId, likeReceivedNotification, likeDeletedNotification } from '../repositories'
 import { ILike, ILikeResponse } from '../models'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
 
-const formatResponse = (response: ILikeResponse) => {
+export interface ILikeFormatedResponse {
+  id: string
+  bookId: string
+  bookTitle: string
+  bookUserId: string
+  userLikedId: string
+  userLikedName: string
+  isVisualized: boolean
+  date: string
+}
+
+const formatResponse = (response: ILikeResponse): ILikeFormatedResponse => {
   return {
     id: response._id,
     bookId: response.bookId,
@@ -53,6 +64,8 @@ const createLikeService = async (like: ILike) => {
     throw handleError(400, 'An eror occured when create this like')
   }
 
+  likeReceivedNotification(formatResponse(likeResponse as unknown as ILikeResponse))
+
   return formatResponse(likeResponse as unknown as ILikeResponse)
 }
 
@@ -61,6 +74,9 @@ const deleteLikeService = async (id: string) => {
   if (!like) {
     throw handleError(404, 'Like not found')
   }
+
+  likeDeletedNotification(formatResponse(like))
+
   return formatResponse(like)
 }
 
