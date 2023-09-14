@@ -118,16 +118,11 @@ const authenticateUserService = async (user: UserAuthenticate) => {
   if (!(await bcrypt.compare(user.password, userResponse.password))) {
     throw handleError(400, 'Invalid password')
   }
-  const token = generateToken({ id: userResponse._id })
 
-  if (userResponse.admin) {
-    const adminToken = generateToken({
-      id: userResponse._id,
-      admin: userResponse.admin
-    })
-
-    return formatResponse(userResponse, token, adminToken)
-  }
+  const token = generateToken({
+    id: userResponse._id,
+    admin: userResponse.admin
+  })
 
   return formatResponse(userResponse, token)
 }
