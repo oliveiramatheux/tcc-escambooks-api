@@ -67,8 +67,8 @@ const createBookController = asyncHandler(
 const deleteBookByIdController = asyncHandler(
   async (request: Request, response: Response) => {
     const { id } = request.params
-    const { userId } = request.headers
-    const book = await deleteBookByIdService(id, String(userId))
+    const { userId, admin } = request.headers
+    const book = await deleteBookByIdService(id, String(userId), !!admin)
     response.status(200).send(book)
   }
 )
@@ -114,7 +114,7 @@ const updateBookByIdController = asyncHandler(
       language,
       previewLink
     } = request.body
-    const { userId } = request.headers
+    const { userId, admin } = request.headers
     const newBook = await updateBookByIdService(
       id,
       {
@@ -130,7 +130,8 @@ const updateBookByIdController = asyncHandler(
         language,
         previewLink
       },
-      String(userId)
+      String(userId),
+      !!admin
     )
     response.status(200).send(newBook)
   }
