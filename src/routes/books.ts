@@ -7,11 +7,13 @@ import {
   validateParamsDeleteBookById,
   verifyToken,
   validateParamsUpdateBookById,
-  validateParamsGetBooksByTitle
+  validateParamsGetBooksByTitle,
+  verifyAdminToken
 } from '../middlewares'
 
 const router = Router()
 router.use(verifyToken)
+router.use(verifyAdminToken)
 
 router.get(
   '/isbn/:isbn',
