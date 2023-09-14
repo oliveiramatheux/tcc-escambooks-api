@@ -17,7 +17,8 @@ import {
   getLikeByUserLikedIdAndBookId,
   getLikesByUserLikedId,
   getBooksByIds,
-  getBooksByTitle
+  getBooksByTitle,
+  getUserById
 } from '../repositories'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
@@ -179,12 +180,13 @@ const createBookService = async (newBook: INewBook) => {
 
 const deleteBookByIdService = async (id: string, userId: string) => {
   const bookResponse = await getBookById(id)
+  const user = await getUserById(userId)
 
   if (!bookResponse) {
     throw handleError(404, 'Book not found')
   }
 
-  if (String(bookResponse.userId) !== userId) {
+  if (!user.admin && String(bookResponse.userId) !== userId) {
     throw handleError(401, 'This user not have permission of delete this book')
   }
 
@@ -200,12 +202,13 @@ const updateBookByIdService = async (
   userId: string
 ) => {
   const bookResponse = await getBookById(id)
+  const user = await getUserById(userId)
 
   if (!bookResponse) {
     throw handleError(404, 'Book not exist')
   }
 
-  if (String(bookResponse.userId) !== userId) {
+  if (!user.admin && String(user._id) !== userId) {
     throw handleError(401, 'This user not have permission of update this book')
   }
 
