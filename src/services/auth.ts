@@ -41,6 +41,7 @@ export interface UserAuthenticateResponse {
   password?: string
   active?: boolean
   imageUrl?: string
+  admin?: boolean
 }
 
 export interface UserSendEmail {
@@ -63,6 +64,7 @@ export interface GenerateTokenParams {
   email: string
   secretToken: string
   id: string
+  admin?: boolean
 }
 
 const generateToken = (generateTokenParams: Partial<GenerateTokenParams>) =>
@@ -83,14 +85,15 @@ const verifyTokenAndEmail = (token: string) => {
 }
 
 const formatResponse = (
-  { _id, name, email, imageUrl }: UserAuthenticateResponse,
+  { _id, name, email, imageUrl, admin }: UserAuthenticateResponse,
   token: string
 ) => ({
   _id,
   name,
   email,
   token,
-  imageUrl
+  imageUrl,
+  admin
 })
 
 const formatResponseVerifyEmailUser = (response: IUserResponse) => ({
@@ -114,7 +117,11 @@ const authenticateUserService = async (user: UserAuthenticate) => {
   if (!(await bcrypt.compare(user.password, userResponse.password))) {
     throw handleError(400, 'Invalid password')
   }
-  const token = generateToken({ id: userResponse._id })
+
+  const token = generateToken({
+    id: userResponse._id,
+    admin: userResponse.admin
+  })
 
   return formatResponse(userResponse, token)
 }

@@ -13,7 +13,8 @@ import {
   validateParamsAuthSendEmailVerify,
   validateParamsAuthSendPasswordReset,
   validateParamsAuthResetPassword,
-  validateParamsAuthResetPasswordToken
+  validateParamsAuthResetPasswordToken,
+  verifyAdminToken
 } from './auth'
 
 import {
@@ -42,6 +43,7 @@ export {
   validateParamsUpdateUser,
   validateParamsAuthentication,
   verifyToken,
+  verifyAdminToken,
   validateParamsAuthEmailVerify,
   validateParamsGetInfoBookByIsbn,
   validateParamsGetBookById,

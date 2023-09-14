@@ -177,14 +177,18 @@ const createBookService = async (newBook: INewBook) => {
   return formatBookResponse(newBookResponse)
 }
 
-const deleteBookByIdService = async (id: string, userId: string) => {
+const deleteBookByIdService = async (
+  id: string,
+  userId: string,
+  admin: boolean
+) => {
   const bookResponse = await getBookById(id)
 
   if (!bookResponse) {
     throw handleError(404, 'Book not found')
   }
 
-  if (String(bookResponse.userId) !== userId) {
+  if (!admin && String(bookResponse.userId) !== userId) {
     throw handleError(401, 'This user not have permission of delete this book')
   }
 
@@ -197,7 +201,8 @@ const deleteBookByIdService = async (id: string, userId: string) => {
 const updateBookByIdService = async (
   id: string,
   newBook: IUpdateBook,
-  userId: string
+  userId: string,
+  admin: boolean
 ) => {
   const bookResponse = await getBookById(id)
 
@@ -205,7 +210,7 @@ const updateBookByIdService = async (
     throw handleError(404, 'Book not exist')
   }
 
-  if (String(bookResponse.userId) !== userId) {
+  if (!admin && String(bookResponse.userId) !== userId) {
     throw handleError(401, 'This user not have permission of update this book')
   }
 

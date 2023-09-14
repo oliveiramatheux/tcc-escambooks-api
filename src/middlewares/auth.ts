@@ -44,7 +44,11 @@ const validateParamsAuthResetPassword = celebrate({
   })
 })
 
-const verifyToken = (request: Request, response: Response, next: NextFunction) => {
+const verifyToken = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
   const authHeader = request.headers.authorization
 
   if (!authHeader) {
@@ -63,18 +67,38 @@ const verifyToken = (request: Request, response: Response, next: NextFunction) =
     return response.status(401).send('Error: Token malformatted')
   }
 
-  jwt.verify(token, authSecret.secret, (err: Error, decoded: jwt.JwtPayload) => {
-    if (err) {
-      return response.status(401).send('Error: Token invalid')
+  jwt.verify(
+    token,
+    authSecret.secret,
+    (err: Error, decoded: jwt.JwtPayload) => {
+      if (err) {
+        return response.status(401).send('Error: Token invalid')
+      }
+      request.headers.userId = decoded.id
+      request.headers.admin = decoded.admin
+      return next()
     }
-    request.headers.userId = decoded.id
-    return next()
-  })
+  )
+}
+
+const verifyAdminToken = (
+  request: Request,
+  response: Response,
+  next: NextFunction
+) => {
+  const isAdmin = request.headers.admin
+
+  if (!isAdmin) {
+    return response.status(401).send('Error: Invalid admin token')
+  }
+
+  return next()
 }
 
 export {
   validateParamsAuthentication,
   verifyToken,
+  verifyAdminToken,
   validateParamsAuthEmailVerify,
   validateParamsAuthSendEmailVerify,
   validateParamsAuthSendPasswordReset,

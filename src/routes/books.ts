@@ -23,7 +23,12 @@ router.get('/list', verifyToken, booksController.getAllBooksController)
 
 router.get('/liked', verifyToken, booksController.getLikedBooksController)
 
-router.get('/title/:title', validateParamsGetBooksByTitle, verifyToken, booksController.getBooksByTitleController)
+router.get(
+  '/title/:title',
+  validateParamsGetBooksByTitle,
+  verifyToken,
+  booksController.getBooksByTitleController
+)
 
 router.get(
   '/:id',
