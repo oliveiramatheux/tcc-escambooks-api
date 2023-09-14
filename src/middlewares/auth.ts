@@ -85,19 +85,36 @@ const verifyAdminToken = (
   response: Response,
   next: NextFunction
 ) => {
-  const adminToken = request.headers['admin-token'] as string
+  const authHeader = request.headers.authorization
 
-  if (!adminToken) {
-    return response.status(401).send('Error: No admin token provided')
+  if (!authHeader) {
+    return response.status(401).send('Error: No token provided')
+  }
+
+  const parts = authHeader.split(' ')
+
+  if (!(parts.length === 2)) {
+    return response.status(401).send('Error: Token error')
+  }
+
+  const [scheme, token] = parts
+
+  if (!/^Bearer$/i.test(scheme)) {
+    return response.status(401).send('Error: Token malformatted')
   }
 
   jwt.verify(
-    adminToken,
+    token,
     authSecret.secret,
     (err: Error, decoded: jwt.JwtPayload) => {
       if (err) {
+        return response.status(401).send('Error: Token invalid')
+      }
+
+      if (!decoded.admin) {
         return response.status(401).send('Error: Invalid admin token')
       }
+
       request.headers.userId = decoded.id
       return next()
     }
