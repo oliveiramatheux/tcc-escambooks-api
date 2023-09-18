@@ -21,7 +21,8 @@ const mockIUserResponse = {
   password: 'teste123',
   birthDate: '12/12/2000',
   imageName: '',
-  imageUrl: ''
+  imageUrl: '',
+  admin: false
 }
 
 const mockRequestCreateUser = {
@@ -37,7 +38,8 @@ const mockResponseCreateUser = {
   password: 'teste123',
   birthDate: '',
   imageName: '',
-  imageUrl: ''
+  imageUrl: '',
+  admin: false
 }
 
 const mockUpdateUserRequest = {
@@ -52,7 +54,8 @@ const mockUpdateUserResponse = {
   password: 'teste123',
   birthDate: '12/12/2000',
   imageName: '',
-  imageUrl: ''
+  imageUrl: '',
+  admin: false
 }
 
 const mockAuthRequest = {
@@ -65,7 +68,8 @@ const mockAuthResponse = {
   name: 'testeeee',
   email: 'teste@teste.com',
   token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMDk3MGIxYjMwMDBkYzBlNTA1ZWU3MCIsImlhdCI6MTYyOTIwOTY5NywiZXhwIjoxNjI5Mjk2MDk3fQ.o2yGbgJD1J4Hl_Agnjk5BkSpJmcL6BZOxlUinE4IAPg',
-  imageUrl: 'test'
+  imageUrl: 'test',
+  admin: false
 }
 
 const mockAuthVerifyEmailRequest = {

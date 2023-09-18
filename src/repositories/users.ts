@@ -28,4 +28,14 @@ const getUserByEmail = async (email: string) => {
   return user
 }
 
-export { getUserById, createNewUser, deleteUserById, updateUserById, getUserByEmail }
+const getAllUsers = async (): Promise<IUserResponse[]> => {
+  try {
+    return await User.find<IUserResponse>({}, null, {
+      sort: { name: 'asc' }
+    })
+  } catch {
+    return []
+  }
+}
+
+export { getUserById, getAllUsers, createNewUser, deleteUserById, updateUserById, getUserByEmail }
