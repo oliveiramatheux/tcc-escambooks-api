@@ -91,7 +91,7 @@ const UserSchema: Schema<IUser> = new Schema(
 
 UserSchema.pre('save', userPreSaveHook)
 
-export async function userPreSaveHook(next: () => void) {
+export async function userPreSaveHook (next: () => void) {
   this.password = await bcrypt.hash(this.password, 10)
   this.secretToken = randomstring.generate({
     length: 8,

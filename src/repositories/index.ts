@@ -3,7 +3,8 @@ import {
   createNewUser,
   deleteUserById,
   updateUserById,
-  getUserByEmail
+  getUserByEmail,
+  getAllUsers
 } from './users'
 
 import { authenticateUserByEmailAndPassword, sendEmail } from './auth'
@@ -41,6 +42,7 @@ export {
   deleteUserById,
   updateUserById,
   getUserByEmail,
+  getAllUsers,
   authenticateUserByEmailAndPassword,
   getInfoBookByIsbn,
   getBookById,

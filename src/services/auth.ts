@@ -60,6 +60,15 @@ export interface UserResetPassword {
   newPassword: string
 }
 
+type AuthResponse = {
+  _id: string
+  name: string
+  email: string
+  token: string
+  imageUrl: string
+  admin?: boolean
+}
+
 export interface GenerateTokenParams {
   email: string
   secretToken: string
@@ -87,7 +96,7 @@ const verifyTokenAndEmail = (token: string) => {
 const formatResponse = (
   { _id, name, email, imageUrl, admin }: UserAuthenticateResponse,
   token: string
-) => ({
+): AuthResponse => ({
   _id,
   name,
   email,

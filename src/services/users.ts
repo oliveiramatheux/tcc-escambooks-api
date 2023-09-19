@@ -4,6 +4,7 @@ import {
   deleteUserById,
   updateUserById,
   getUserByEmail,
+  getAllUsers,
   sendEmail,
   getBooksByUserId,
   deleteBooksByUserId,
@@ -35,8 +36,15 @@ const formatResponse = (response: IUserResponse) => {
     email: response.email,
     birthDate: response.birthDate,
     imageUrl: response.imageUrl,
-    imageName: response.imageName
+    imageName: response.imageName,
+    admin: response.admin
   }
+}
+
+const formatUsersResponse = (
+  users: IUserResponse[]
+): IUserResponse[] => {
+  return users.map(formatResponse)
 }
 
 const getUser = async (id: string) => {
@@ -45,6 +53,16 @@ const getUser = async (id: string) => {
     throw handleError(404, 'User not found')
   }
   return formatResponse(userResponse)
+}
+
+const getAllUsersService = async () => {
+  const users = await getAllUsers()
+
+  if (!users.length) {
+    throw handleError(404, 'There is no users on platform')
+  }
+
+  return formatUsersResponse(users)
 }
 
 const createUser = async (newUser: INewUser) => {
@@ -122,4 +140,4 @@ const updateUser = async (id: string, newUser: INewUser) => {
   return formatResponse(newUserResponse)
 }
 
-export { getUser, createUser, deleteUser, updateUser }
+export { getUser, getAllUsersService, createUser, deleteUser, updateUser }

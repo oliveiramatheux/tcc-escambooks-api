@@ -1,4 +1,4 @@
-import { getUser, createUser, deleteUser, updateUser } from './users'
+import { getUser, getAllUsersService, createUser, deleteUser, updateUser } from './users'
 
 import {
   authenticateUserService,
@@ -34,6 +34,7 @@ import {
 
 export {
   getUser,
+  getAllUsersService,
   createUser,
   deleteUser,
   updateUser,
