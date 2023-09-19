@@ -2,6 +2,12 @@ import { ILikeFormatedResponse } from 'services/likes'
 import { Like, ILike, ILikeResponse } from '../models'
 import { emitEvent } from './event'
 
+export type GetLikesByBookUserIdAndUserLikedIdParam = {
+  bookUserId: string
+  userLikedId: string
+  alreadyMatch: boolean
+}
+
 const getLikeById = async (id: string) => {
   return await Like.findById<ILikeResponse>({ _id: id })
 }
@@ -62,6 +68,14 @@ const deleteLikesFromUserLikedId = async (userLikedId: string) => {
   }
 }
 
+const getLikesByBookUserIdAndUserLikedId = async (params: GetLikesByBookUserIdAndUserLikedIdParam) => {
+  try {
+    return await Like.find<ILikeResponse>({ bookUserId: params.bookUserId, userLikedId: params.userLikedId, alreadyMatch: params.alreadyMatch }, null, { sort: { createdAt: 'asc' } })
+  } catch {
+    return []
+  }
+}
+
 export {
   getLikeById,
   createLike,
@@ -74,5 +88,6 @@ export {
   deleteLikesFromBookUserId,
   deleteLikesFromUserLikedId,
   likeReceivedNotification,
-  likeDeletedNotification
+  likeDeletedNotification,
+  getLikesByBookUserIdAndUserLikedId
 }
