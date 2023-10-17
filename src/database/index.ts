@@ -1,13 +1,16 @@
 import mongoose from 'mongoose'
 import config from '../config'
-import { logger } from '../utils'
+import { logger, isProduction } from '../utils'
 
-const databaseUrlConnection = `mongodb+srv://${config.databaseUser}:${config.databasePassword}@${config.databaseHost}/${config.databaseName}?retryWrites=true&w=majority`
+const buildDatabaseUrlConnection = () => {
+  if (isProduction()) return `mongodb+srv://${config.databaseUser}:${config.databasePassword}@${config.databaseHost}/${config.databaseName}?retryWrites=true&w=majority`
+  return `mongodb://${config.databaseHost}/${config.databaseName}`
+}
 
 mongoose.createConnection = (): any => {
   if (!mongoose.connection.readyState) {
     mongoose.set('strictQuery', false)
-    return mongoose.connect(databaseUrlConnection)
+    return mongoose.connect(buildDatabaseUrlConnection())
       .then(() => logger.info('Connected to MongoDB'))
       .catch(() => setTimeout(mongoose.createConnection, 3000))
   }
