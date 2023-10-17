@@ -3,7 +3,8 @@ import {
   validateParamsCreateUser,
   validateParamsDeleteUserById,
   validateParamsUpdateUser,
-  validateParamsGetBooksByUserId
+  validateParamsGetBooksByUserId,
+  validateParamsGetUsersByName
 } from './users'
 
 import {
@@ -62,5 +63,6 @@ export {
   validateParamsGetLikesByUserLikedId,
   validateParamsGetBooksByUserId,
   validateParamsDeleteLikesByBookId,
-  validateParamsGetBooksByTitle
+  validateParamsGetBooksByTitle,
+  validateParamsGetUsersByName
 }

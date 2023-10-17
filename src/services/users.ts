@@ -5,6 +5,7 @@ import {
   updateUserById,
   getUserByEmail,
   getAllUsers,
+  getUsersByName,
   sendEmail,
   getBooksByUserId,
   deleteBooksByUserId,
@@ -140,4 +141,14 @@ const updateUser = async (id: string, newUser: INewUser) => {
   return formatResponse(newUserResponse)
 }
 
-export { getUser, getAllUsersService, createUser, deleteUser, updateUser }
+const getUsersByNameService = async (name: string) => {
+  const users = await getUsersByName(name)
+
+  if (!users.length) {
+    throw handleError(404, 'No user found with this name')
+  }
+
+  return await formatUsersResponse(users)
+}
+
+export { getUser, getAllUsersService, createUser, deleteUser, updateUser, getUsersByNameService }

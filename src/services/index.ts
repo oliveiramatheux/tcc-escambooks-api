@@ -1,4 +1,4 @@
-import { getUser, getAllUsersService, createUser, deleteUser, updateUser } from './users'
+import { getUser, getAllUsersService, createUser, deleteUser, updateUser, getUsersByNameService } from './users'
 
 import {
   authenticateUserService,
@@ -60,5 +60,6 @@ export {
   getLikesByUserLikedIdService,
   getLikedBooksService,
   deleteLikesByBookIdService,
-  getBooksByTitleService
+  getBooksByTitleService,
+  getUsersByNameService
 }
