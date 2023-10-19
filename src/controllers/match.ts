@@ -9,20 +9,19 @@ export const getMatchesByUserIdController = asyncHandler(async (request: Request
 })
 
 export const updateMatchByIdController = asyncHandler(async (request: Request, response: Response) => {
+  const { userId } = request.headers
   const { id } = request.params
   const {
     books,
     users,
     likes,
-    usersConfirmed,
-    isVisualized
+    usersConfirmed
   } = request.body
   const match = await updateMatchByIdService(id, {
     books,
     users,
     likes,
-    usersConfirmed,
-    isVisualized
-  })
+    usersConfirmed
+  }, String(userId))
   response.status(200).send(match)
 })

@@ -78,7 +78,7 @@ const getLikeByIdService = async (id: string) => {
 // depois dos usuarios confirmarem colocar os books para available false
 // colocar isVisualized a nivel de usuário no match
 
-const verifyMatch = async (like: ILikeFormatedResponse) => {
+const verifyMatch = async (like: ILikeFormatedResponse, userId: string) => {
   const likesReceived = await getLikesByBookUserIdAndUserLikedId({ bookUserId: like.userLikedId, userLikedId: like.bookUserId, alreadyMatch: false })
 
   if (!likesReceived.length) {
@@ -104,16 +104,16 @@ const verifyMatch = async (like: ILikeFormatedResponse) => {
 
   const matchCreated = await createMatch({
     books,
-    users,
+    users: users.map(user => ({ userId: user, isVisualized: false })),
     likes
   })
 
   likes.forEach(like => updateLikeById(like, { alreadyMatch: true } as ILike))
 
-  matchReceivedNotification(formatMatchResponse(matchCreated as unknown as IMatchResponse))
+  matchReceivedNotification(formatMatchResponse(matchCreated as unknown as IMatchResponse, userId))
 }
 
-const createLikeService = async (like: ILike) => {
+const createLikeService = async (like: ILike, userId: string) => {
   const likeResponse = await createLike(like)
 
   if (!likeResponse) {
@@ -124,21 +124,21 @@ const createLikeService = async (like: ILike) => {
 
   const likeResult = formatResponse(likeResponse as unknown as ILikeResponse)
 
-  verifyMatch(likeResult)
+  verifyMatch(likeResult, userId)
 
   return likeResult
 }
 
-const verifyShouldDeleteMatch = async (like: ILikeResponse) => {
+const verifyShouldDeleteMatch = async (like: ILikeResponse, userId: string) => {
   const match = await deleteMatchByLikeId(like._id)
 
   if (match) {
     match.likes.forEach(like => updateLikeById(like, { alreadyMatch: false } as ILike))
-    matchDeletedNotification(formatMatchResponse(match))
+    matchDeletedNotification(formatMatchResponse(match, userId))
   }
 }
 
-const deleteLikeService = async (id: string) => {
+const deleteLikeService = async (id: string, userId: string) => {
   const like = await deleteLike(id)
   if (!like) {
     throw handleError(404, 'Like not found')
@@ -146,7 +146,7 @@ const deleteLikeService = async (id: string) => {
 
   likeDeletedNotification(formatResponse(like))
 
-  verifyShouldDeleteMatch(like)
+  verifyShouldDeleteMatch(like, userId)
 
   return formatResponse(like)
 }

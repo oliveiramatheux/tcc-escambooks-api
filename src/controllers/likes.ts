@@ -17,6 +17,7 @@ const getLikeByIdController = asyncHandler(async (request: Request, response: Re
 })
 
 const createLikeController = asyncHandler(async (request: Request, response: Response) => {
+  const { userId } = request.headers
   const {
     bookId,
     bookTitle,
@@ -32,13 +33,14 @@ const createLikeController = asyncHandler(async (request: Request, response: Res
     userLikedId,
     userLikedName,
     isVisualized
-  })
+  }, String(userId))
   response.status(201).send(like)
 })
 
 const deleteLikeController = asyncHandler(async (request: Request, response: Response) => {
   const { id } = request.params
-  const like = await deleteLikeService(id)
+  const { userId } = request.headers
+  const like = await deleteLikeService(id, String(userId))
   response.status(200).send(like)
 })
 

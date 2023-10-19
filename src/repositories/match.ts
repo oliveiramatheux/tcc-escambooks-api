@@ -1,13 +1,12 @@
 import { MatchFormated } from 'services'
-import { IMatch, Match, IMatchResponse } from '../models'
+import { IMatch, Match, IMatchResponse, MatchUser } from '../models'
 import { emitEvent } from './event'
 
 export type MatchUpdate = {
   books?: string[]
-  users?: string[]
+  users?: MatchUser[]
   likes?: string[]
   usersConfirmed?: string[]
-  isVisualized?: boolean
 }
 
 export const createMatch = async (match: IMatch) => {
@@ -36,17 +35,17 @@ export const verifyAlreadyMatch = async (users: string[], book: string): Promise
 
 export const matchReceivedNotification = (match: MatchFormated) => {
   const { users } = match
-  users.forEach(user => emitEvent(`match-received-${user}`, match))
+  users.forEach(user => emitEvent(`match-received-${user.userId}`, match))
 }
 
 export const matchDeletedNotification = (match: MatchFormated) => {
   const { users } = match
-  users.forEach(user => emitEvent(`match-deleted-${user}`, match))
+  users.forEach(user => emitEvent(`match-deleted-${user.userId}`, match))
 }
 
 export const getMatchesByUserId = async (userId: string): Promise<IMatchResponse[]> => {
   try {
-    return await Match.find<IMatchResponse>({ users: { $in: [userId] } })
+    return await Match.find<IMatchResponse>({ users: { userId, isVisualized: true || false } })
   } catch {
     return []
   }

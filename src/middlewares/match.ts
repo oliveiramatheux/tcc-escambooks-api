@@ -13,9 +13,8 @@ export const validateParamsUpdateMatch = celebrate({
   ...validateParamsId,
   [Segments.BODY]: Joi.object().keys({
     books: Joi.array().items(Joi.string().required()),
-    users: Joi.array().items(Joi.string().required()),
+    users: Joi.array().items(Joi.object().required()),
     likes: Joi.array().items(Joi.string().required()),
-    usersConfirmed: Joi.array().items(Joi.string().required()),
-    isVisualized: Joi.boolean()
+    usersConfirmed: Joi.array().items(Joi.string().required())
   })
 })

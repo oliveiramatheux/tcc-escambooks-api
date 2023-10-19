@@ -1,11 +1,15 @@
 import mongoose, { Schema } from 'mongoose'
 
+export type MatchUser = {
+  userId: string
+  isVisualized: boolean
+}
+
 export interface IMatch {
   books: string[]
-  users: string[]
+  users: MatchUser[]
   likes: string[]
   usersConfirmed?: string[]
-  isVisualized?: boolean
 }
 
 export type IMatchResponse = IMatch & {
@@ -29,10 +33,6 @@ const MatchSchema: Schema<IMatch> = new Schema({
   usersConfirmed: {
     type: [],
     default: []
-  },
-  isVisualized: {
-    type: Boolean,
-    default: false
   }
 },
 {
