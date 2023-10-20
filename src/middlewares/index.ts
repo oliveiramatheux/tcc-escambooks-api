@@ -36,6 +36,7 @@ import {
   validateParamsDeleteLikesByBookId
 } from './likes'
 
+export * from './match'
 export {
   validateParamsGetUserById,
   validateParamsCreateUser,

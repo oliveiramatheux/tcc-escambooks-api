@@ -4,4 +4,5 @@ import * as authenticationController from './auth'
 import * as booksController from './books'
 import * as likesController from './likes'
 
+export * from './match'
 export { healthCheckController, usersController, authenticationController, booksController, likesController }

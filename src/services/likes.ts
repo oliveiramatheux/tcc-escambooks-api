@@ -1,7 +1,24 @@
-import { getLikeById, createLike, deleteLike, updateLikeById, getLikesByBookUserId, getLikesByUserLikedId, deleteLikesByBookId, likeReceivedNotification, likeDeletedNotification } from '../repositories'
-import { ILike, ILikeResponse } from '../models'
+import {
+  getLikeById,
+  createLike,
+  deleteLike,
+  updateLikeById,
+  getLikesByBookUserId,
+  getLikesByUserLikedId,
+  deleteLikesByBookId,
+  likeReceivedNotification,
+  likeDeletedNotification,
+  getLikesByBookUserIdAndUserLikedId,
+  createMatch,
+  deleteMatchByLikeId,
+  verifyAlreadyMatch,
+  matchReceivedNotification,
+  matchDeletedNotification
+} from '../repositories'
+import { ILike, ILikeResponse, IMatchResponse } from '../models'
 import { handleError } from '../utils/errors'
 import { objectFormatter } from '../utils/objectFormatter'
+import { formatMatchResponse } from './match'
 
 export interface ILikeFormatedResponse {
   id: string
@@ -57,7 +74,42 @@ const getLikeByIdService = async (id: string) => {
   return formatResponse(like)
 }
 
-const createLikeService = async (like: ILike) => {
+const verifyMatch = async (like: ILikeFormatedResponse, userId: string) => {
+  const likesReceived = await getLikesByBookUserIdAndUserLikedId({ bookUserId: like.userLikedId, userLikedId: like.bookUserId, alreadyMatch: false })
+
+  if (!likesReceived.length) {
+    return
+  }
+
+  const firstLike = likesReceived[0]
+
+  const users = [firstLike.bookUserId, like.bookUserId]
+  const books = [firstLike.bookId, like.bookId]
+  const likes = [firstLike._id, like.id]
+
+  const alreadyMatch = []
+
+  const verifyAlreadyMatchMapped = books.map(async book => {
+    const match = await verifyAlreadyMatch(users, book)
+    if (match) alreadyMatch.push(match)
+  })
+
+  await Promise.all(verifyAlreadyMatchMapped)
+
+  if (alreadyMatch.length) return
+
+  const matchCreated = await createMatch({
+    books,
+    users: users.map(user => ({ userId: user, isVisualized: false })),
+    likes
+  })
+
+  likes.forEach(like => updateLikeById(like, { alreadyMatch: true } as ILike))
+
+  matchReceivedNotification(formatMatchResponse(matchCreated as unknown as IMatchResponse, userId))
+}
+
+const createLikeService = async (like: ILike, userId: string) => {
   const likeResponse = await createLike(like)
 
   if (!likeResponse) {
@@ -66,16 +118,31 @@ const createLikeService = async (like: ILike) => {
 
   likeReceivedNotification(formatResponse(likeResponse as unknown as ILikeResponse))
 
-  return formatResponse(likeResponse as unknown as ILikeResponse)
+  const likeResult = formatResponse(likeResponse as unknown as ILikeResponse)
+
+  verifyMatch(likeResult, userId)
+
+  return likeResult
 }
 
-const deleteLikeService = async (id: string) => {
+const verifyShouldDeleteMatch = async (like: ILikeResponse, userId: string) => {
+  const match = await deleteMatchByLikeId(like._id)
+
+  if (match) {
+    match.likes.forEach(like => updateLikeById(like, { alreadyMatch: false } as ILike))
+    matchDeletedNotification(formatMatchResponse(match, userId))
+  }
+}
+
+const deleteLikeService = async (id: string, userId: string) => {
   const like = await deleteLike(id)
   if (!like) {
     throw handleError(404, 'Like not found')
   }
 
   likeDeletedNotification(formatResponse(like))
+
+  verifyShouldDeleteMatch(like, userId)
 
   return formatResponse(like)
 }

@@ -89,7 +89,7 @@ const verifyAdminToken = (
   const isAdmin = request.headers.admin
 
   if (!isAdmin) {
-    return response.status(401).send('Error: Invalid admin token')
+    return response.status(401).send('Error: Unauthorized permission')
   }
 
   return next()
