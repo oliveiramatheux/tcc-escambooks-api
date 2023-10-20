@@ -7,8 +7,7 @@ services:
     ports:
       - 27017:27017
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: escambooks-develop
 
   mongo-express:
     image: mongo-express
@@ -18,10 +17,3 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
-
-  escambooks-api:
-    build:
-      dockerfile: Dockerfile
-      context: .
-    ports:
-      - 8000:8000
