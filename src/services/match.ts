@@ -1,6 +1,7 @@
 import { handleError } from '../utils/errors'
-import { MatchUpdate, getMatchesByUserId, updateMatchById } from '../repositories'
+import { MatchUpdate, deleteMatchByBookId, getMatchesByUserId, matchDeletedNotification, updateMatchById } from '../repositories'
 import { IMatchResponse, MatchUser } from '../models'
+import { buildFormattedDate } from '../utils'
 
 export type MatchFormated = {
   id: string
@@ -14,6 +15,7 @@ export type MatchFormated = {
 
 export const formatMatchResponse = (response: IMatchResponse, userId: string): MatchFormated => {
   const isVisualized = response.users.find(user => user.userId === userId).isVisualized
+
   return {
     id: response._id,
     books: response.books,
@@ -21,7 +23,7 @@ export const formatMatchResponse = (response: IMatchResponse, userId: string): M
     likes: response.likes,
     usersConfirmed: response.usersConfirmed,
     isVisualized,
-    date: response.createdAt
+    date: buildFormattedDate(response.createdAt)
   }
 }
 
@@ -50,4 +52,9 @@ export const updateMatchByIdService = async (id: string, match: MatchUpdate, use
     throw handleError(400, 'An error occured when update this match')
   }
   return formatMatchResponse(matchResponse, userId)
+}
+
+export const deleteMatchByBookIdService = async (bookId: string, userId: string) => {
+  const match = await deleteMatchByBookId(bookId)
+  matchDeletedNotification(formatMatchResponse(match, userId))
 }

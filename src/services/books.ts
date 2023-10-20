@@ -1,3 +1,4 @@
+import { deleteMatchByBookIdService } from './'
 import {
   IBookResponse,
   INewBook,
@@ -194,6 +195,7 @@ const deleteBookByIdService = async (
 
   const bookDeleteResponse = await deleteBookById(id)
   await deleteLikesByBookIdService(id)
+  await deleteMatchByBookIdService(id, userId)
 
   return formatBookResponse(bookDeleteResponse)
 }

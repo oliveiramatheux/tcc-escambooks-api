@@ -45,7 +45,7 @@ export const matchDeletedNotification = (match: MatchFormated) => {
 
 export const getMatchesByUserId = async (userId: string): Promise<IMatchResponse[]> => {
   try {
-    return await Match.find<IMatchResponse>({ users: { userId, isVisualized: true || false } })
+    return await Match.find<IMatchResponse>({ users: { $elemMatch: { userId } } })
   } catch {
     return []
   }
@@ -56,6 +56,22 @@ export const updateMatchById = async (id: string, match: MatchUpdate): Promise<I
     return await Match.findOneAndUpdate<IMatchResponse>({ _id: id }, match, {
       new: true
     })
+  } catch {
+    return null
+  }
+}
+
+export const deleteMatchByBookId = async (bookId: string): Promise<IMatchResponse | null> => {
+  try {
+    return await Match.findOneAndDelete<IMatchResponse>({ books: { $in: [bookId] } })
+  } catch {
+    return null
+  }
+}
+
+export const deleteMatchesByUserId = async (userId: string) => {
+  try {
+    return await Match.deleteMany({ users: { $elemMatch: { userId } } })
   } catch {
     return null
   }

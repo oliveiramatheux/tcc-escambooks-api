@@ -74,10 +74,6 @@ const getLikeByIdService = async (id: string) => {
   return formatResponse(like)
 }
 
-// arrumar para deletar o match quando exclui o livro e quando exclui o usuário
-// depois dos usuarios confirmarem colocar os books para available false
-// colocar isVisualized a nivel de usuário no match
-
 const verifyMatch = async (like: ILikeFormatedResponse, userId: string) => {
   const likesReceived = await getLikesByBookUserIdAndUserLikedId({ bookUserId: like.userLikedId, userLikedId: like.bookUserId, alreadyMatch: false })
 
