@@ -7,6 +7,7 @@ export interface ILike {
   userLikedId: string
   userLikedName: string
   isVisualized: boolean
+  alreadyMatch?: boolean
 }
 
 export type ILikeResponse = ILike & {
@@ -36,6 +37,10 @@ const LikeSchema: Schema<ILike> = new Schema({
     required: true
   },
   isVisualized: {
+    type: Boolean,
+    default: false
+  },
+  alreadyMatch: {
     type: Boolean,
     default: false
   }

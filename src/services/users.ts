@@ -10,7 +10,8 @@ import {
   getBooksByUserId,
   deleteBooksByUserId,
   deleteLikesFromBookUserId,
-  deleteLikesFromUserLikedId
+  deleteLikesFromUserLikedId,
+  deleteMatchesByUserId
 } from '../repositories'
 import { INewUser, IUserResponse } from '../models/users'
 import { handleError } from '../utils/errors'
@@ -112,6 +113,7 @@ const deleteUser = async (id: string) => {
   await deleteBooksByUserId(userResponse._id)
   await deleteLikesFromBookUserId(userResponse._id)
   await deleteLikesFromUserLikedId(userResponse._id)
+  await deleteMatchesByUserId(String(userResponse._id))
 
   const userDeletedResponse: IUserResponse = await deleteUserById(id)
 

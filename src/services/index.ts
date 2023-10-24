@@ -32,6 +32,8 @@ import {
   deleteLikesByBookIdService
 } from './likes'
 
+export * from './match'
+
 export {
   getUser,
   getAllUsersService,

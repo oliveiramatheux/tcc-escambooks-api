@@ -36,6 +36,7 @@ import {
 
 export * from './books'
 export * from './likes'
+export * from './match'
 
 export {
   getUserById,

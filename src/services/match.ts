@@ -1,0 +1,60 @@
+import { handleError } from '../utils/errors'
+import { MatchUpdate, deleteMatchByBookId, getMatchesByUserId, matchDeletedNotification, updateMatchById } from '../repositories'
+import { IMatchResponse, MatchUser } from '../models'
+import { buildFormattedDate } from '../utils'
+
+export type MatchFormated = {
+  id: string
+  books: string[]
+  users: MatchUser[]
+  likes: string[]
+  usersConfirmed?: string[]
+  isVisualized: boolean
+  date?: string
+}
+
+export const formatMatchResponse = (response: IMatchResponse, userId: string): MatchFormated => {
+  const isVisualized = response.users.find(user => user.userId === userId).isVisualized
+
+  return {
+    id: response._id,
+    books: response.books,
+    users: response.users,
+    likes: response.likes,
+    usersConfirmed: response.usersConfirmed,
+    isVisualized,
+    date: buildFormattedDate(response.createdAt)
+  }
+}
+
+const formatMatchesResponse = (matches: IMatchResponse[], userId: string) => {
+  const matchesFormated = matches.map(match => formatMatchResponse(match, userId))
+  return (
+    {
+      items: matchesFormated,
+      totalItems: matchesFormated.length,
+      totalItemsNotVisualized: matchesFormated.filter(match => !match.isVisualized).length
+    }
+  )
+}
+
+export const getMatchesByUserIdService = async (userId: string) => {
+  const matches = await getMatchesByUserId(userId)
+  if (!matches) {
+    throw handleError(404, 'This user not have matches')
+  }
+  return formatMatchesResponse(matches, userId)
+}
+
+export const updateMatchByIdService = async (id: string, match: MatchUpdate, userId: string) => {
+  const matchResponse = await updateMatchById(id, match)
+  if (!matchResponse) {
+    throw handleError(400, 'An error occured when update this match')
+  }
+  return formatMatchResponse(matchResponse, userId)
+}
+
+export const deleteMatchByBookIdService = async (bookId: string, userId: string) => {
+  const match = await deleteMatchByBookId(bookId)
+  matchDeletedNotification(formatMatchResponse(match, userId))
+}
