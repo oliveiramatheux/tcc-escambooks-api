@@ -13,12 +13,6 @@ import {
 const router = Router()
 
 router.get(
-  '/allUsers',
-  verifyToken,
-  usersController.getAllUsersController
-)
-
-router.get(
   '/:id',
   validateParamsGetUserById,
   usersController.getUserByIdController

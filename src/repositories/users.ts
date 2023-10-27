@@ -38,7 +38,7 @@ const getAllUsers = async (): Promise<IUserResponse[]> => {
   }
 }
 
-const getUsersByName = async (name: string) => {
+const getUsersByName = async (name: string): Promise<IUserResponse[]> => {
   try {
     return await User.find<IUserResponse>({
       name: { $regex: '.*' + name + '.*', $options: 'i' }
