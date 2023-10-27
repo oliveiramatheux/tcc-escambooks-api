@@ -42,8 +42,8 @@ router.get(
 
 router.get(
   '/username/:name',
-  validateParamsGetUsersByName,
   verifyToken,
+  validateParamsGetUsersByName,
   usersController.getUsersByNameController
 )
 

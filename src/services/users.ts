@@ -144,7 +144,7 @@ const updateUser = async (id: string, newUser: INewUser) => {
 }
 
 const getUsersByNameService = async (name: string) => {
-  const users:IUserResponse[] = await getUsersByName(name)
+  const users: IUserResponse[] = await getUsersByName(name)
 
   if (!users.length) {
     throw handleError(404, 'No user found with this name')
