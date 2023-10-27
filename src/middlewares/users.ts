@@ -43,10 +43,17 @@ const validateParamsGetBooksByUserId = celebrate({
   ...validateParamsId
 })
 
+const validateParamsGetUsersByName = celebrate({
+  [Segments.PARAMS]: Joi.object().keys({
+    name: Joi.string().required()
+  })
+})
+
 export {
   validateParamsGetUserById,
   validateParamsCreateUser,
   validateParamsDeleteUserById,
   validateParamsUpdateUser,
-  validateParamsGetBooksByUserId
+  validateParamsGetBooksByUserId,
+  validateParamsGetUsersByName
 }

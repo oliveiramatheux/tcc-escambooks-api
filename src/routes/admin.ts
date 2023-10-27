@@ -9,9 +9,9 @@ const router = Router()
 
 router.get(
   '/users',
-  usersController.getAllUsersController,
   verifyToken,
-  verifyAdminToken
+  verifyAdminToken,
+  usersController.getAllUsersController
 )
 
 export default router

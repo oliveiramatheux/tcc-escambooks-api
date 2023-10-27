@@ -6,7 +6,8 @@ import {
   validateParamsDeleteUserById,
   validateParamsUpdateUser,
   verifyToken,
-  validateParamsGetBooksByUserId
+  validateParamsGetBooksByUserId,
+  validateParamsGetUsersByName
 } from '../middlewares'
 
 const router = Router()
@@ -37,6 +38,13 @@ router.get(
   verifyToken,
   validateParamsGetBooksByUserId,
   booksController.getBooksByUserIdController
+)
+
+router.get(
+  '/username/:name',
+  verifyToken,
+  validateParamsGetUsersByName,
+  usersController.getUsersByNameController
 )
 
 export default router

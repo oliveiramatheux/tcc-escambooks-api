@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getUser, getAllUsersService, createUser, deleteUser, updateUser } from '../services'
+import { getUser, getAllUsersService, createUser, deleteUser, updateUser, getUsersByNameService } from '../services'
 import asyncHandler from 'express-async-handler'
 
 const getUserByIdController = asyncHandler(async (request: Request, response: Response) => {
@@ -34,4 +34,10 @@ const updateUserByIdController = asyncHandler(async (request: Request, response:
   response.status(200).send(newUser)
 })
 
-export { getUserByIdController, getAllUsersController, createUserController, deleteUserByIdController, updateUserByIdController }
+const getUsersByNameController = asyncHandler(async (request: Request, response: Response) => {
+  const { name } = request.params
+  const users = await getUsersByNameService(name)
+  response.status(200).send(users)
+})
+
+export { getUserByIdController, getAllUsersController, createUserController, deleteUserByIdController, updateUserByIdController, getUsersByNameController }

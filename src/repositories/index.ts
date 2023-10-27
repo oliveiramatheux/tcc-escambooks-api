@@ -4,7 +4,8 @@ import {
   deleteUserById,
   updateUserById,
   getUserByEmail,
-  getAllUsers
+  getAllUsers,
+  getUsersByName
 } from './users'
 
 import { authenticateUserByEmailAndPassword, sendEmail } from './auth'
@@ -63,5 +64,6 @@ export {
   getBooksByIds,
   deleteLikesByBookId,
   getBooksByTitle,
-  likeReceivedNotification
+  likeReceivedNotification,
+  getUsersByName
 }
