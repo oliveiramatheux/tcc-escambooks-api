@@ -18,3 +18,7 @@ export const validateParamsUpdateMatch = celebrate({
     usersConfirmed: Joi.array().items(Joi.string().required())
   })
 })
+
+export const validateParamsGetMatchDetailsById = celebrate({
+  ...validateParamsId
+})

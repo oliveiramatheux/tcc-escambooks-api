@@ -76,3 +76,11 @@ export const deleteMatchesByUserId = async (userId: string) => {
     return null
   }
 }
+
+export const getMatchById = async (matchId: string): Promise<IMatchResponse | null> => {
+  try {
+    return await Match.findById<IMatchResponse>({ _id: matchId })
+  } catch {
+    return null
+  }
+}
