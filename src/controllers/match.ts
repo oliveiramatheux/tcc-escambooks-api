@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { getMatchesByUserIdService, updateMatchByIdService } from '../services'
+import { getMatchDetailsByIdService, getMatchesByUserIdService, updateMatchByIdService } from '../services'
 import asyncHandler from 'express-async-handler'
 
 export const getMatchesByUserIdController = asyncHandler(async (request: Request, response: Response) => {
@@ -23,5 +23,12 @@ export const updateMatchByIdController = asyncHandler(async (request: Request, r
     likes,
     usersConfirmed
   }, String(userId))
+  response.status(200).send(match)
+})
+
+export const getMatchDetailsByIdController = asyncHandler(async (request: Request, response: Response) => {
+  const { userId } = request.headers
+  const { id } = request.params
+  const match = await getMatchDetailsByIdService(id, String(userId))
   response.status(200).send(match)
 })
