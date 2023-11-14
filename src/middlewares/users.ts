@@ -19,6 +19,8 @@ const validateParamsCreateUser = celebrate({
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
     birthDate: Joi.string(),
+    phone: Joi.string(),
+    address: Joi.string(),
     imageUrl: Joi.string(),
     imageName: Joi.string()
   })
@@ -34,6 +36,8 @@ const validateParamsUpdateUser = celebrate({
     name: Joi.string(),
     email: Joi.string().email(),
     birthDate: Joi.string(),
+    phone: Joi.string(),
+    address: Joi.string(),
     imageUrl: Joi.string(),
     imageName: Joi.string()
   })

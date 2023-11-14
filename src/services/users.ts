@@ -37,15 +37,15 @@ const formatResponse = (response: IUserResponse) => {
     name: response.name,
     email: response.email,
     birthDate: response.birthDate,
+    phone: response.phone,
+    address: response.address,
     imageUrl: response.imageUrl,
     imageName: response.imageName,
     admin: response.admin
   }
 }
 
-const formatUsersResponse = (
-  users: IUserResponse[]
-): IUserResponse[] => {
+const formatUsersResponse = (users: IUserResponse[]): IUserResponse[] => {
   return users.map(formatResponse)
 }
 
@@ -108,7 +108,9 @@ const deleteUser = async (id: string) => {
   }
 
   const userBooks = await getBooksByUserId(userResponse._id)
-  const userBooksImagesInfos: UserBookImageInfo[] = userBooks.filter(book => !!book.imageName).map(book => ({ bookId: book._id, bookImageName: book.imageName }))
+  const userBooksImagesInfos: UserBookImageInfo[] = userBooks
+    .filter((book) => !!book.imageName)
+    .map((book) => ({ bookId: book._id, bookImageName: book.imageName }))
 
   await deleteBooksByUserId(userResponse._id)
   await deleteLikesFromBookUserId(userResponse._id)
@@ -117,7 +119,10 @@ const deleteUser = async (id: string) => {
 
   const userDeletedResponse: IUserResponse = await deleteUserById(id)
 
-  return { ...formatResponse(userDeletedResponse), userBooksImages: userBooksImagesInfos }
+  return {
+    ...formatResponse(userDeletedResponse),
+    userBooksImages: userBooksImagesInfos
+  }
 }
 
 const updateUser = async (id: string, newUser: INewUser) => {
@@ -153,4 +158,11 @@ const getUsersByNameService = async (name: string) => {
   return await formatUsersResponse(users)
 }
 
-export { getUser, getAllUsersService, createUser, deleteUser, updateUser, getUsersByNameService }
+export {
+  getUser,
+  getAllUsersService,
+  createUser,
+  deleteUser,
+  updateUser,
+  getUsersByNameService
+}
