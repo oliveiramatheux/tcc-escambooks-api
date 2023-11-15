@@ -11,9 +11,11 @@ tags:
   - name: health-check
     description: Check health of application
   - name: auth
-    description: Authentication
+    description: Authentication and security routes
+  - name: users
+    description: All related to users
   - name: admin
-    description: Routes for admin users
+    description: Routes for admins
 paths:
   /auth:
     post:
@@ -198,18 +200,165 @@ paths:
           description: Unauthorized. Authentication-related errors.
         '404':
           description: Not found. No users on the platform.
+  /users:
+    post:
+      summary: Create new user
+      description: Route for user's registration
+      tags:
+        - users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserBody'
+      responses:
+        '200':
+          description: Success. Returns the created user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+        '400':
+          description: Unauthorized. An eror occured when create this user.
+        '409':
+          description: Conflict. User email alredy exist.
+  /users/{id}:
+    get:
+      summary: Get one user
+      description: Get user by his ID
+      tags:
+        - users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserByIdResponse'
+        '404':
+          description: Not found. User not found.
+    delete:
+      summary: Delete user
+      description: Delete user by his ID
+      tags:
+        - users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns the deleted user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteUserByIdResponse'
+        '404':
+          description: Not found. User not found.
+    patch:
+      summary: Update user
+      description: Update user by his ID
+      tags:
+        - users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserBody'
+      responses:
+        '200':
+          description: Success. Returns the updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserResponse'
+        '404':
+          description: Not found. User not exist.
+        '409':
+          description: Conflict. User email alredy exist.
+        '400':
+          description: Bad Request. An error occured when update this user.
+  /users/username/{name}:
+    get:
+      summary: Get users by name
+      description: Get users filtered by name
+      tags:
+        - users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          description: The name to filter users
+      responses:
+        '200':
+          description: Success. Returns a list of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersArray'
+        '404':
+          description: Not found. No user found with this name.
+  /users/{id}/books:
+    get:
+      summary: Get user's books
+      description: Get user's books by user id
+      tags:
+        - users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns a list of books of the desired user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBookResponse'
+        '404':
+          description: Not found. This user does not have books.
 definitions:
   User:
     type: object
     properties:
-      _id:
+      id:
         type: string
       name:
         type: string
       email:
         type: string
-      password:
-        type: string
+        format: email
+        pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
       birthDate:
         type: string
       phone:
@@ -224,18 +373,66 @@ definitions:
       imageName:
         type: string
         nullable: true
-      secretToken:
-        type: string
-        nullable: true
-      resetToken:
-        type: string
-        nullable: true
-      active:
-        type: boolean
       admin:
         type: boolean
-security:
-  - BearerAuth: []
+  Book:
+    type: object
+    properties:
+      id:
+        type: string
+      userId:
+        type: string
+      title:
+        type: array
+      authors:
+        type: string
+        items: string
+      categories:
+        type: string
+        items: string
+      publisher:
+        type: string
+      publishedDate:
+        type: string
+      description:
+        type: string
+      pageCount:
+        type: integer
+      imageUrl:
+        type: string
+      imageName:
+        type: string
+      language:
+        type: string
+      previewLink:
+        type: string
+      date:
+        type: string
+  BookWithUser:
+    allOf:
+      - $ref: '#/definitions/Book'
+      - type: object
+        properties:
+          userName:
+            type: string
+          userEmail:
+            type: string
+            format: email
+            pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+          userImageUrl:
+            type: string
+  BookWithUserAndLike:
+    allOf:
+      - $ref: '#/definitions/BookWithUser'
+      - type: object
+        properties:
+          alreadyLike:
+            description: Exists if the logged user has already liked this book
+            nullable: true
+            type: object
+            properties:
+              likeId:
+                type: string
 components:
   securitySchemes:
     BearerAuth:
@@ -331,3 +528,67 @@ components:
       type: array
       items:
         $ref: '#/definitions/User'
+    CreateUserBody:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+        password:
+          type: string
+        birthDate:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        imageUrl:
+          type: string
+        imageName:
+          type: string
+    CreateUserResponse:
+      type: object
+      $ref: '#/definitions/User'
+    GetUserByIdResponse:
+      type: object
+      $ref: '#/definitions/User'
+    DeleteUserByIdResponse:
+      type: object
+      $ref: '#/definitions/User'
+    UpdateUserBody:
+      type: object
+      required:
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+        birthDate:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        imageUrl:
+          type: string
+        imageName:
+          type: string
+    UpdateUserResponse:
+      type: object
+      $ref: '#/definitions/User'
+    PaginatedBookResponse:
+      type: object
+      properties:
+        items:
+          $ref: '#/definitions/BookWithUserAndLike'
+        totalItems:
+          type: integer
