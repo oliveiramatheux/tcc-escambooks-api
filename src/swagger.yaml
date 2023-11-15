@@ -10,18 +10,164 @@ servers:
 tags:
   - name: health-check
     description: Check health of application
-    externalDocs:
-      description: Url from health-check
-      url: http://localhost:8000/api/health-check
   - name: auth
     description: Authentication
-    externalDocs:
-      description: Url from auth
-      url: http://localhost:8000/api/auth
+  - name: admin
+    description: Routes for admin users
 paths:
+  /auth:
+    post:
+      summary: Authentication
+      description: Authentication
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the list of users.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthPostResponse'
+        '400':
+          description: Unauthorized. Invalid password.
+        '401':
+          description: Unauthorized. This user not verify email.
+        '404':
+          description: Not found. User not found.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthPostBody'
+  /auth/verify:
+    post:
+      summary: Verify account
+      description: Verify email from new users
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the verified user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyUserResponse'
+        '400':
+          description: Unauthorized. An error occured when verify this email.
+        '401':
+          description: Unauthorized. Invalid secret token for this email.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyUserBody'
+  /auth/send/email-verify:
+    post:
+      summary: Send email to verify account
+      description: Send email to verify email from new users
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the user's email.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendEmailBody'
+        '400':
+          description: Unauthorized. An error occured when verify this email.
+        '401':
+          description: Unauthorized. This user alredy verify email.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendEmailBody'
+  /auth/send/email-reset-password:
+    post:
+      summary: Send email to reset password
+      description: Send email to the user that forgot his password to reset his password
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the user's email.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendEmailBody'
+        '401':
+          description: Unauthorized. This user dont have password.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendEmailBody'
+  /auth/reset-password-token:
+    post:
+      summary: Reset password
+      description: Reset user's password with reset token from email
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the user's email.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendEmailBody'
+        '400':
+          description: Bad Request. An error occured when update this password.
+        '401':
+          description: Unauthorized. Invalid reset token for this email.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordTokenBody'
+  /auth/reset-password:
+    post:
+      summary: Reset password
+      description: Reset user's password with his credentials
+      security:
+        - BearerAuth: []
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the user's email.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendEmailBody'
+        '400':
+          description: Bad Request. An error occured when update this password.
+        '401':
+          description: Unauthorized. Invalid password.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordBody'
   /health-check:
     get:
-      summary:  Check health of application
+      summary: Check health of application
       description: Check health of application
       tags:
         - health-check
@@ -33,23 +179,86 @@ paths:
               schema:
                 type: string
                 example: Server is ok
-  /auth:
-    post:
-      summary: Authentication
-      description: Authentication
+  /admin/users:
+    get:
+      summary: Get all users
+      description: Route to retrieve all users.
+      security:
+        - BearerAuth: []
       tags:
-        - auth
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AuthPostBody"
+        - admin
       responses:
-        200:
-          description: Ok
+        '200':
+          description: Success. Returns the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersArray'
+        '401':
+          description: Unauthorized. Authentication-related errors.
+        '404':
+          description: Not found. No users on the platform.
+definitions:
+  User:
+    type: object
+    properties:
+      _id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      birthDate:
+        type: string
+      phone:
+        type: string
+        nullable: true
+      address:
+        type: string
+        nullable: true
+      imageUrl:
+        type: string
+        nullable: true
+      imageName:
+        type: string
+        nullable: true
+      secretToken:
+        type: string
+        nullable: true
+      resetToken:
+        type: string
+        nullable: true
+      active:
+        type: boolean
+      admin:
+        type: boolean
+security:
+  - BearerAuth: []
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
   schemas:
+    AuthPostResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+        token:
+          type: string
+        imageUrl:
+          type: string
+        admin:
+          type: boolean
     AuthPostBody:
       type: object
       required:
@@ -62,3 +271,63 @@ components:
           pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
         password:
           type: string
+    VerifyUserBody:
+      type: object
+      properties:
+        token:
+          type: string
+          description: token sent to registered email
+    SendEmailBody:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+    VerifyUserResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+    ResetPasswordTokenBody:
+      type: object
+      required:
+        - email
+        - newPassword
+        - resetToken
+      properties:
+        newPassword:
+          type: string
+        resetToken:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+    ResetPasswordBody:
+      type: object
+      required:
+        - email
+        - password
+        - newPassword
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+        password:
+          type: string
+        newPassword:
+          type: string
+    UsersArray:
+      type: array
+      items:
+        $ref: '#/definitions/User'
