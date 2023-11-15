@@ -7,6 +7,8 @@ export interface INewUser {
   email?: string
   password?: string
   birthDate?: string
+  phone?: string
+  address?: string
   imageUrl?: string
   imageName?: string
   secretToken?: string
@@ -20,6 +22,8 @@ export interface IUserResponse {
   email: string
   password?: string
   birthDate?: string
+  phone?: string
+  address?: string
   imageUrl?: string
   imageName?: string
   secretToken?: string
@@ -33,6 +37,8 @@ export interface IUser {
   email: string
   password?: string
   birthDate?: string
+  phone?: string
+  address?: string
   imageUrl?: string
   imageName?: string
   secretToken?: string
@@ -60,6 +66,12 @@ const UserSchema: Schema<IUser> = new Schema(
       select: false
     },
     birthDate: {
+      type: String
+    },
+    phone: {
+      type: String
+    },
+    address: {
       type: String
     },
     imageUrl: {
@@ -91,7 +103,7 @@ const UserSchema: Schema<IUser> = new Schema(
 
 UserSchema.pre('save', userPreSaveHook)
 
-export async function userPreSaveHook (next: () => void) {
+export async function userPreSaveHook(next: () => void) {
   this.password = await bcrypt.hash(this.password, 10)
   this.secretToken = randomstring.generate({
     length: 8,
