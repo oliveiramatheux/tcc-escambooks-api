@@ -6,22 +6,179 @@ info:
     email: matheus.oliveira0730@gmail.com
   version: 1.0.11
 servers:
+  - url: https://escambooks-api.com/api
+    description: Production server
   - url: http://localhost:8000/api
+    description: Development server
 tags:
   - name: health-check
     description: Check health of application
-    externalDocs:
-      description: Url from health-check
-      url: http://localhost:8000/api/health-check
   - name: auth
-    description: Authentication
-    externalDocs:
-      description: Url from auth
-      url: http://localhost:8000/api/auth
+    description: Authentication and security routes
+  - name: users
+    description: All related to users
+  - name: books
+    description: All related to books
+  - name: likes
+    description: All related to likes
+  - name: match
+    description: All related to match
+  - name: admin
+    description: Routes for admins
 paths:
+  /auth:
+    post:
+      summary: Authentication
+      description: Authentication
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the list of users.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthPostResponse'
+        '400':
+          description: Unauthorized. Invalid password.
+        '401':
+          description: Unauthorized. This user not verify email.
+        '404':
+          description: Not found. User not found.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthPostBody'
+  /auth/verify:
+    post:
+      summary: Verify account
+      description: Verify email from new users
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the verified user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyUserResponse'
+        '400':
+          description: Unauthorized. An error occured when verify this email.
+        '401':
+          description: Unauthorized. Invalid secret token for this email.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyUserBody'
+  /auth/send/email-verify:
+    post:
+      summary: Send email to verify account
+      description: Send email to verify email from new users
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the user's email.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendEmailBody'
+        '400':
+          description: Unauthorized. An error occured when verify this email.
+        '401':
+          description: Unauthorized. This user alredy verify email.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendEmailBody'
+  /auth/send/email-reset-password:
+    post:
+      summary: Send email to reset password
+      description: Send email to the user that forgot his password to reset his password
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the user's email.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendEmailBody'
+        '401':
+          description: Unauthorized. This user dont have password.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendEmailBody'
+  /auth/reset-password-token:
+    post:
+      summary: Reset password
+      description: Reset user's password with reset token from email
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the user's email.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendEmailBody'
+        '400':
+          description: Bad Request. An error occured when update this password.
+        '401':
+          description: Unauthorized. Invalid reset token for this email.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordTokenBody'
+  /auth/reset-password:
+    post:
+      summary: Reset password
+      description: Reset user's password with his credentials
+      security:
+        - BearerAuth: []
+      tags:
+        - auth
+      responses:
+        '200':
+          description: Success. Returns the user's email.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendEmailBody'
+        '400':
+          description: Bad Request. An error occured when update this password.
+        '401':
+          description: Unauthorized. Invalid password.
+        '404':
+          description: Not found. User not exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordBody'
   /health-check:
     get:
-      summary:  Check health of application
+      summary: Check health of application
       description: Check health of application
       tags:
         - health-check
@@ -33,23 +190,726 @@ paths:
               schema:
                 type: string
                 example: Server is ok
-  /auth:
-    post:
-      summary: Authentication
-      description: Authentication
+  /admin/users:
+    get:
+      summary: Get all users
+      description: Route to retrieve all users.
+      security:
+        - BearerAuth: []
       tags:
-        - auth
+        - admin
+      responses:
+        '200':
+          description: Success. Returns the authenticated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersArray'
+        '401':
+          description: Unauthorized. Authentication-related errors.
+        '404':
+          description: Not found. No users on the platform.
+  /users:
+    post:
+      summary: Create new user
+      description: Route for user's registration
+      tags:
+        - users
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AuthPostBody"
+              $ref: '#/components/schemas/CreateUserBody'
       responses:
-        200:
-          description: Ok
+        '200':
+          description: Success. Returns the created user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+        '400':
+          description: Unauthorized. An eror occured when create this user.
+        '409':
+          description: Conflict. User email alredy exist.
+  /users/{id}:
+    get:
+      summary: Get one user
+      description: Get user by his ID
+      tags:
+        - users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns the user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserByIdResponse'
+        '404':
+          description: Not found. User not found.
+    delete:
+      summary: Delete user
+      description: Delete user by his ID
+      tags:
+        - users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns the deleted user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteUserByIdResponse'
+        '404':
+          description: Not found. User not found.
+    patch:
+      summary: Update user
+      description: Update user by his ID
+      tags:
+        - users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserBody'
+      responses:
+        '200':
+          description: Success. Returns the updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserResponse'
+        '404':
+          description: Not found. User not exist.
+        '409':
+          description: Conflict. User email alredy exist.
+        '400':
+          description: Bad Request. An error occured when update this user.
+  /users/username/{name}:
+    get:
+      summary: Get users by name
+      description: Get users filtered by name
+      tags:
+        - users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema:
+            type: string
+          description: The name to filter users
+      responses:
+        '200':
+          description: Success. Returns a list of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersArray'
+        '404':
+          description: Not found. No user found with this name.
+  /users/{id}/books:
+    get:
+      summary: Get user's books
+      description: Get user's books by user id
+      tags:
+        - users
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns a list of books of the desired user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBookResponse'
+        '404':
+          description: Not found. This user does not have books.
+  /books/list:
+    get:
+      summary: Get books
+      description: Get all books
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success. Returns a list of all books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBookResponse'
+        '404':
+          description: Not found. Not have any books.
+  /books/liked:
+    get:
+      summary: Get user's liked books
+      description: Get all liked books from logged user
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success. Returns a list of all liked books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBookResponse'
+        '404':
+          description: Not found. This user not have books.
+  /books/title/{title}:
+    get:
+      summary: Get books by title
+      description: Get books filtered by title
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: title
+          required: true
+          schema:
+            type: string
+          description: The title to filter books
+      responses:
+        '200':
+          description: Success. Returns a list of filtered books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBookResponse'
+        '404':
+          description: Not found. Not have books with this title.
+  /books/{id}:
+    get:
+      summary: Get one book
+      description: Get book by id
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The book ID
+      responses:
+        '200':
+          description: Success. Returns the book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBookByIdResponse'
+        '404':
+          description: Not found. Book not found.
+    delete:
+      summary: Delete book
+      description: Delete book by id
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The book ID
+      responses:
+        '200':
+          description: Success. Returns the deleted book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteBookByIdResponse'
+        '404':
+          description: Not found. Book not found.
+        '401':
+          description: Unauthorized. This user not have permission of delete this book.
+    patch:
+      summary: Update book
+      description: Update book by id
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The book ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookByIdBody'
+      responses:
+        '200':
+          description: Success. Returns the updated book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBookByIdResponse'
+        '404':
+          description: Not found. Book not exist.
+        '401':
+          description: Unauthorized. This user not have permission of delete this book.
+  /books:
+    post:
+      summary: Create book
+      description: Route to publish a book
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookByIdBody'
+      responses:
+        '200':
+          description: Success. Returns the created book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBookResponse'
+        '400':
+          description: Bad Request. An error ocurred when create a book.
+  /likes:
+    post:
+      summary: Create like
+      description: Create like
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLikeBody'
+      responses:
+        '200':
+          description: Success. Returns the created like
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateLikeResponse'
+        '400':
+          description: Bad Request. An eror occured when create this like.
+  /likes/bookUserId/{bookUserId}:
+    get:
+      summary: Get received likes
+      description: Get user's received likes
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: bookUserId
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns the list of likes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLikeResponse'
+        '404':
+          description: Not Found. This user not have books liked.
+  /likes/userLikedId/{userLikedId}:
+    get:
+      summary: Get given likes
+      description: Get user's given likes
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: userLikedId
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns the list of likes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListLikeResponse'
+        '404':
+          description: Not Found. This user not liked any book.
+  /likes/{id}:
+    get:
+      summary: Get like by id
+      description: Get like by id
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The like ID
+      responses:
+        '200':
+          description: Success. Returns the like
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLikeByIdResponse'
+        '404':
+          description: Not Found. Like not found.
+    delete:
+      summary: Delete like by id
+      description: Delete like by id
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The like ID
+      responses:
+        '200':
+          description: Success. Returns the deleted like
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteLikeByIdResponse'
+        '404':
+          description: Not Found. Like not found.
+    patch:
+      summary: Update like by id
+      description: Update like by id
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The like ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLikeByIdBody'
+      responses:
+        '200':
+          description: Success. Returns the updated like
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateLikeByIdResponse'
+        '400':
+          description: Bad Request. An error occured when update this like.
+  /likes/bookId/{bookId}:
+    delete:
+      summary: Delete likes by book id
+      description: Delete all likes from book
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: bookId
+          required: true
+          schema:
+            type: string
+          description: The book ID
+      responses:
+        '200':
+          description: Success. Returns the count of deleted likes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteLikesByBookIdResponse'
+        '404':
+          description: Not Found. Like not found.
+  /match:
+    get:
+      summary: Get matches
+      description: Get matches from logged user
+      tags:
+        - match
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success. Returns the list of matches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListMatchResponse'
+        '404':
+          description: Not Found. This user not have matches.
+  /match/{id}:
+    get:
+      summary: Get match by id
+      description: Get match details
+      tags:
+        - match
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success. Returns the detailed match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMatchByIdResponse'
+        '404':
+          description: Not Found. Match not found.
+    patch:
+      summary: Update match by id
+      description: Update match by id
+      tags:
+        - match
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMatchByIdBody'
+      responses:
+        '200':
+          description: Success. Returns the updated match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMatchByIdResponse'
+        '400':
+          description: Bad Request. An error occured when update this match
+        '404':
+          description: Not Found. Match not found.
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+        format: email
+        pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+      birthDate:
+        type: string
+      phone:
+        type: string
+        nullable: true
+      address:
+        type: string
+        nullable: true
+      imageUrl:
+        type: string
+        nullable: true
+      imageName:
+        type: string
+        nullable: true
+      admin:
+        type: boolean
+  Book:
+    type: object
+    properties:
+      id:
+        type: string
+      userId:
+        type: string
+      title:
+        type: string
+      authors:
+        type: array
+        items:
+          type: string
+      categories:
+        type: array
+        items:
+          type: string
+      publisher:
+        type: string
+      publishedDate:
+        type: string
+      description:
+        type: string
+      pageCount:
+        type: integer
+      imageUrl:
+        type: string
+      imageName:
+        type: string
+      language:
+        type: string
+      previewLink:
+        type: string
+      date:
+        type: string
+  BookWithUser:
+    allOf:
+      - $ref: '#/definitions/Book'
+      - type: object
+        properties:
+          userName:
+            type: string
+          userEmail:
+            type: string
+            format: email
+            pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+          userImageUrl:
+            type: string
+  BookWithUserAndLike:
+    allOf:
+      - $ref: '#/definitions/BookWithUser'
+      - type: object
+        properties:
+          alreadyLike:
+            description: Exists if the logged user has already liked this book
+            nullable: true
+            type: object
+            properties:
+              likeId:
+                type: string
+  Like:
+    type: object
+    properties:
+      id:
+        type: string
+      bookId:
+        type: string
+      bookTitle:
+        type: string
+      bookUserId:
+        type: string
+      userLikedId:
+        type: string
+      userLikedName:
+        type: string
+      isVisualized:
+        type: boolean
+      date:
+        type: string
+  Match:
+    type: object
+    properties:
+      id:
+        type: string
+      books:
+        type: array
+        items:
+          type: string
+      users:
+        type: array
+        items:
+          type: object
+          properties:
+            userId:
+              type: string
+            isVisualized:
+              type: boolean
+      likes:
+        type: array
+        items:
+          type: string
+      usersConfirmed:
+        type: array
+        items:
+          type: string
+      isVisualized:
+        type: boolean
+      date:
+        type: string
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
   schemas:
+    AuthPostResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+        token:
+          type: string
+        imageUrl:
+          type: string
+        admin:
+          type: boolean
     AuthPostBody:
       type: object
       required:
@@ -62,3 +922,316 @@ components:
           pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
         password:
           type: string
+    VerifyUserBody:
+      type: object
+      properties:
+        token:
+          type: string
+          description: token sent to registered email
+    SendEmailBody:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+    VerifyUserResponse:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+    ResetPasswordTokenBody:
+      type: object
+      required:
+        - email
+        - newPassword
+        - resetToken
+      properties:
+        newPassword:
+          type: string
+        resetToken:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+    ResetPasswordBody:
+      type: object
+      required:
+        - email
+        - password
+        - newPassword
+      properties:
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+        password:
+          type: string
+        newPassword:
+          type: string
+    UsersArray:
+      type: array
+      items:
+        $ref: '#/definitions/User'
+    CreateUserBody:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+        password:
+          type: string
+        birthDate:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        imageUrl:
+          type: string
+        imageName:
+          type: string
+    CreateUserResponse:
+      type: object
+      $ref: '#/definitions/User'
+    GetUserByIdResponse:
+      type: object
+      $ref: '#/definitions/User'
+    DeleteUserByIdResponse:
+      type: object
+      $ref: '#/definitions/User'
+    UpdateUserBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+          pattern: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i
+        birthDate:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        imageUrl:
+          type: string
+        imageName:
+          type: string
+    UpdateUserResponse:
+      type: object
+      $ref: '#/definitions/User'
+    ListBookResponse:
+      type: object
+      properties:
+        items:
+          $ref: '#/definitions/BookWithUserAndLike'
+        totalItems:
+          type: integer
+    GetBookByIdResponse:
+      type: object
+      $ref: '#/definitions/Book'
+    DeleteBookByIdResponse:
+      type: object
+      $ref: '#/definitions/Book'
+    UpdateBookByIdBody:
+      type: object
+      properties:
+        title:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+        categories:
+          type: array
+          items:
+            type: string
+        publisher:
+          type: string
+        publishedDate:
+          type: string
+        description:
+          type: string
+        pageCount:
+          type: integer
+        imageUrl:
+          type: string
+        imageName:
+          type: string
+        language:
+          type: string
+        previewLink:
+          type: string
+    UpdateBookByIdResponse:
+      type: object
+      $ref: '#/definitions/Book'
+    CreateBookBody:
+      type: object
+      required:
+        - title
+        - authors
+        - publisher
+        - publishedDate
+        - description
+        - pageCount
+        - categories
+        - language
+      properties:
+        title:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+        categories:
+          type: array
+          items:
+            type: string
+        publisher:
+          type: string
+        publishedDate:
+          type: string
+        description:
+          type: string
+        pageCount:
+          type: integer
+        imageUrl:
+          type: string
+        imageName:
+          type: string
+        language:
+          type: string
+        previewLink:
+          type: string
+    CreateBookResponse:
+      type: object
+      $ref: '#/definitions/Book'
+    ListLikeResponse:
+      type: object
+      properties:
+        items:
+          $ref: '#/definitions/Like'
+        totalItems:
+          type: integer
+        totalItemsNotVisualized:
+          type: integer
+    GetLikeByIdResponse:
+      type: object
+      $ref: '#/definitions/Like'
+    DeleteLikeByIdResponse:
+      type: object
+      $ref: '#/definitions/Like'
+    UpdateLikeByIdBody:
+      type: object
+      properties:
+        bookId:
+          type: string
+        bookTitle:
+          type: string
+        bookUserId:
+          type: string
+        userLikedId:
+          type: string
+        userLikedName:
+          type: string
+        isVisualized:
+          type: boolean
+    UpdateLikeByIdResponse:
+      type: object
+      $ref: '#/definitions/Like'
+    DeleteLikesByBookIdResponse:
+      type: object
+      properties:
+        totalItemsDeleted:
+          type: integer
+    CreateLikeBody:
+      type: object
+      required:
+        - bookId
+        - bookTitle
+        - bookUserId
+        - userLikedId
+        - userLikedName
+      properties:
+        bookId:
+          type: string
+        bookTitle:
+          type: string
+        bookUserId:
+          type: string
+        userLikedId:
+          type: string
+        userLikedName:
+          type: string
+        isVisualized:
+          type: boolean
+    CreateLikeResponse:
+      type: object
+      $ref: '#/definitions/Like'
+    ListMatchResponse:
+      type: object
+      properties:
+        items:
+          $ref: '#/definitions/Match'
+        totalItems:
+          type: integer
+        totalItemsNotVisualized:
+          type: integer
+    GetMatchByIdResponse:
+      type: object
+      properties:
+        match:
+          $ref: '#/definitions/Match'
+        currentUser:
+          $ref: '#/definitions/User'
+        otherUser:
+          $ref: '#/definitions/User'
+        currentUserBook:
+          $ref: '#/definitions/Book'
+        otherUserBook:
+          $ref: '#/definitions/Book'
+    UpdateMatchByIdBody:
+      type: object
+      properties:
+        books:
+          type: array
+          items:
+            type: string
+        users:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+              isVisualized:
+                type: boolean
+        likes:
+          type: array
+          items:
+            type: string
+        usersConfirmed:
+          type: array
+          items:
+            type: string
+    UpdateMatchByIdResponse:
+      type: object
+      $ref: '#/definitions/Match'
