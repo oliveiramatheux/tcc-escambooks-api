@@ -19,6 +19,8 @@ tags:
     description: All related to users
   - name: books
     description: All related to books
+  - name: likes
+    description: All related to likes
   - name: admin
     description: Routes for admins
 paths:
@@ -517,6 +519,177 @@ paths:
                 $ref: '#/components/schemas/CreateBookResponse'
         '400':
           description: Bad Request. An error ocurred when create a book.
+  /likes:
+    post:
+      summary: Create like
+      description: Create like
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLikeBody'
+      responses:
+        '200':
+          description: Success. Returns the created like
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateLikeResponse'
+        '400':
+          description: Bad Request. An eror occured when create this like.
+  /likes/bookUserId/{bookUserId}:
+    get:
+      summary: Get received likes
+      description: Get user's received likes
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: bookUserId
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns the list of likes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLikeResponse'
+        '404':
+          description: Not Found. This user not have books liked.
+  /likes/userLikedId/{userLikedId}:
+    get:
+      summary: Get given likes
+      description: Get user's given likes
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: userLikedId
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        '200':
+          description: Success. Returns the list of likes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLikeResponse'
+        '404':
+          description: Not Found. This user not liked any book.
+  /likes/{id}:
+    get:
+      summary: Get like by id
+      description: Get like by id
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The like ID
+      responses:
+        '200':
+          description: Success. Returns the like
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLikeByIdResponse'
+        '404':
+          description: Not Found. Like not found.
+    delete:
+      summary: Delete like by id
+      description: Delete like by id
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The like ID
+      responses:
+        '200':
+          description: Success. Returns the deleted like
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteLikeByIdResponse'
+        '404':
+          description: Not Found. Like not found.
+    patch:
+      summary: Update like by id
+      description: Update like by id
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The like ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateLikeByIdBody'
+      responses:
+        '200':
+          description: Success. Returns the updated like
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateLikeByIdResponse'
+        '400':
+          description: Bad Request. An error occured when update this like.
+  /likes/bookId/{bookId}:
+    delete:
+      summary: Delete likes by book id
+      description: Delete all likes from book
+      tags:
+        - likes
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: bookId
+          required: true
+          schema:
+            type: string
+          description: The book ID
+      responses:
+        '200':
+          description: Success. Returns the count of deleted likes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteLikesByBookIdResponse'
+        '404':
+          description: Not Found. Like not found.
 definitions:
   User:
     type: object
@@ -605,6 +778,25 @@ definitions:
             properties:
               likeId:
                 type: string
+  Like:
+    type: object
+    properties:
+      id:
+        type: string
+      bookId:
+        type: string
+      bookTitle:
+        type: string
+      bookUserId:
+        type: string
+      userLikedId:
+        type: string
+      userLikedName:
+        type: string
+      isVisualized:
+        type: boolean
+      date:
+        type: string
 components:
   securitySchemes:
     BearerAuth:
@@ -842,3 +1034,65 @@ components:
     CreateBookResponse:
       type: object
       $ref: '#/definitions/Book'
+    PaginatedLikeResponse:
+      type: object
+      properties:
+        items:
+          $ref: '#/definitions/Like'
+        totalItems:
+          type: integer
+        totalItemsNotVisualized:
+          type: integer
+    GetLikeByIdResponse:
+      type: object
+      $ref: '#/definitions/Like'
+    DeleteLikeByIdResponse:
+      type: object
+      $ref: '#/definitions/Like'
+    UpdateLikeByIdBody:
+      type: object
+      properties:
+        bookId:
+          type: string
+        bookTitle:
+          type: string
+        bookUserId:
+          type: string
+        userLikedId:
+          type: string
+        userLikedName:
+          type: string
+        isVisualized:
+          type: boolean
+    UpdateLikeByIdResponse:
+      type: object
+      $ref: '#/definitions/Like'
+    DeleteLikesByBookIdResponse:
+      type: object
+      properties:
+        totalItemsDeleted:
+          type: integer
+    CreateLikeBody:
+      type: object
+      required:
+        - bookId
+        - bookTitle
+        - bookUserId
+        - userLikedId
+        - userLikedName
+      properties:
+        bookId:
+          type: string
+        bookTitle:
+          type: string
+        bookUserId:
+          type: string
+        userLikedId:
+          type: string
+        userLikedName:
+          type: string
+        isVisualized:
+          type: boolean
+    CreateLikeResponse:
+      type: object
+      $ref: '#/definitions/Like'
