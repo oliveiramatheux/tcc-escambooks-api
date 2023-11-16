@@ -58,7 +58,9 @@ export const updateMatchByIdService = async (id: string, match: MatchUpdate, use
 
 export const deleteMatchByBookIdService = async (bookId: string, userId: string) => {
   const match = await deleteMatchByBookId(bookId)
-  matchDeletedNotification(formatMatchResponse(match, userId))
+  if (match) {
+    matchDeletedNotification(formatMatchResponse(match, userId))
+  }
 }
 
 export const getMatchDetailsByIdService = async (matchId: string, userId: string) => {

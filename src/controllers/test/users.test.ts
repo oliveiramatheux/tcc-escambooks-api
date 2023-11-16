@@ -23,7 +23,7 @@ describe('test users controller', () => {
       mockGetUser.mockResolvedValue(mockIUserResponse)
       const { id } = mockIdRequestGetUserById
       const response = await supertest(server)
-        .get(`/api/users/${id}`)
+        .get(`/api/users/${id}`).set({ Authorization: `Bearer ${generateDefaultToken}` })
 
       expect(response.status).toBe(200)
       expect(response.body).toEqual(mockIUserResponse)
@@ -33,7 +33,7 @@ describe('test users controller', () => {
       mockGetUser.mockRejectedValue(new Error('unknown server error'))
       const { id } = mockIdRequestGetUserById
       const response = await supertest(server)
-        .get(`/api/users/${id}`)
+        .get(`/api/users/${id}`).set({ Authorization: `Bearer ${generateDefaultToken}` })
 
       expect(response.status).toBe(500)
       expect(response.text).toBe('Error: unknown server error')
@@ -67,7 +67,7 @@ describe('test users controller', () => {
       mockDeleteUser.mockResolvedValue({ ...mockIUserResponse, userBooksImages: [] })
       const { id } = mockIdRequestDeleteUserById
       const response = await supertest(server)
-        .delete(`/api/users/${id}`)
+        .delete(`/api/users/${id}`).set({ Authorization: `Bearer ${generateDefaultToken}` })
 
       expect(response.status).toBe(200)
       expect(response.body).toEqual({ ...mockIUserResponse, userBooksImages: [] })
@@ -77,7 +77,7 @@ describe('test users controller', () => {
       mockDeleteUser.mockRejectedValue(new Error('unknown server error'))
       const { id } = mockIdRequestDeleteUserById
       const response = await supertest(server)
-        .delete(`/api/users/${id}`)
+        .delete(`/api/users/${id}`).set({ Authorization: `Bearer ${generateDefaultToken}` })
 
       expect(response.status).toBe(500)
       expect(response.text).toBe('Error: unknown server error')
