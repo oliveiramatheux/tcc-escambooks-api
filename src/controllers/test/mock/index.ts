@@ -20,6 +20,8 @@ const mockIUserResponse = {
   email: 'teste@teste.com',
   password: 'teste123',
   birthDate: '12/12/2000',
+  phone: '',
+  address: '',
   imageName: '',
   imageUrl: '',
   admin: false
@@ -36,6 +38,8 @@ const mockResponseCreateUser = {
   name: 'teste',
   email: 'teste@teste.com',
   password: 'teste123',
+  phone: '',
+  address: '',
   birthDate: '',
   imageName: '',
   imageUrl: '',
@@ -53,6 +57,8 @@ const mockUpdateUserResponse = {
   email: 'teste2@teste.com',
   password: 'teste123',
   birthDate: '12/12/2000',
+  phone: '',
+  address: '',
   imageName: '',
   imageUrl: '',
   admin: false
@@ -67,13 +73,15 @@ const mockAuthResponse = {
   _id: '610970b1b3000dc0e505ee70',
   name: 'testeeee',
   email: 'teste@teste.com',
-  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMDk3MGIxYjMwMDBkYzBlNTA1ZWU3MCIsImlhdCI6MTYyOTIwOTY5NywiZXhwIjoxNjI5Mjk2MDk3fQ.o2yGbgJD1J4Hl_Agnjk5BkSpJmcL6BZOxlUinE4IAPg',
+  token:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMDk3MGIxYjMwMDBkYzBlNTA1ZWU3MCIsImlhdCI6MTYyOTIwOTY5NywiZXhwIjoxNjI5Mjk2MDk3fQ.o2yGbgJD1J4Hl_Agnjk5BkSpJmcL6BZOxlUinE4IAPg',
   imageUrl: 'test',
   admin: false
 }
 
 const mockAuthVerifyEmailRequest = {
-  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMDk3MGIxYjMwMDBkYzBlNTA1ZWU3MCIsImlhdCI6MTYyOTIwOTY5NywiZXhwIjoxNjI5Mjk2MDk3fQ.o2yGbgJD1J4Hl_Agnjk5BkSpJmcL6BZOxlUinE4IAPg'
+  token:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxMDk3MGIxYjMwMDBkYzBlNTA1ZWU3MCIsImlhdCI6MTYyOTIwOTY5NywiZXhwIjoxNjI5Mjk2MDk3fQ.o2yGbgJD1J4Hl_Agnjk5BkSpJmcL6BZOxlUinE4IAPg'
 }
 
 const mockAuthVerifyEmailResponse = {
