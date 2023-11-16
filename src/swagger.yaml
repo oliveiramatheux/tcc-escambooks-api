@@ -357,7 +357,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedBookResponse'
+                $ref: '#/components/schemas/ListBookResponse'
         '404':
           description: Not found. This user does not have books.
   /books/list:
@@ -374,7 +374,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedBookResponse'
+                $ref: '#/components/schemas/ListBookResponse'
         '404':
           description: Not found. Not have any books.
   /books/liked:
@@ -391,7 +391,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedBookResponse'
+                $ref: '#/components/schemas/ListBookResponse'
         '404':
           description: Not found. This user not have books.
   /books/title/{title}:
@@ -415,7 +415,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedBookResponse'
+                $ref: '#/components/schemas/ListBookResponse'
         '404':
           description: Not found. Not have books with this title.
   /books/{id}:
@@ -565,7 +565,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedLikeResponse'
+                $ref: '#/components/schemas/ListLikeResponse'
         '404':
           description: Not Found. This user not have books liked.
   /likes/userLikedId/{userLikedId}:
@@ -589,7 +589,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedLikeResponse'
+                $ref: '#/components/schemas/ListLikeResponse'
         '404':
           description: Not Found. This user not liked any book.
   /likes/{id}:
@@ -706,7 +706,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedMatchResponse'
+                $ref: '#/components/schemas/ListMatchResponse'
         '404':
           description: Not Found. This user not have matches.
   /match/{id}:
@@ -1038,7 +1038,7 @@ components:
     UpdateUserResponse:
       type: object
       $ref: '#/definitions/User'
-    PaginatedBookResponse:
+    ListBookResponse:
       type: object
       properties:
         items:
@@ -1124,7 +1124,7 @@ components:
     CreateBookResponse:
       type: object
       $ref: '#/definitions/Book'
-    PaginatedLikeResponse:
+    ListLikeResponse:
       type: object
       properties:
         items:
@@ -1186,7 +1186,7 @@ components:
     CreateLikeResponse:
       type: object
       $ref: '#/definitions/Like'
-    PaginatedMatchResponse:
+    ListMatchResponse:
       type: object
       properties:
         items:
