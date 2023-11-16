@@ -6,7 +6,10 @@ info:
     email: matheus.oliveira0730@gmail.com
   version: 1.0.11
 servers:
+  - url: https://escambooks-api.com/api
+    description: Production server
   - url: http://localhost:8000/api
+    description: Development server
 tags:
   - name: health-check
     description: Check health of application
@@ -14,6 +17,8 @@ tags:
     description: Authentication and security routes
   - name: users
     description: All related to users
+  - name: books
+    description: All related to books
   - name: admin
     description: Routes for admins
 paths:
@@ -229,6 +234,8 @@ paths:
       description: Get user by his ID
       tags:
         - users
+      security:
+        - BearerAuth: []
       parameters:
         - in: path
           name: id
@@ -250,6 +257,8 @@ paths:
       description: Delete user by his ID
       tags:
         - users
+      security:
+        - BearerAuth: []
       parameters:
         - in: path
           name: id
@@ -347,6 +356,167 @@ paths:
                 $ref: '#/components/schemas/PaginatedBookResponse'
         '404':
           description: Not found. This user does not have books.
+  /books/list:
+    get:
+      summary: Get books
+      description: Get all books
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success. Returns a list of all books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBookResponse'
+        '404':
+          description: Not found. Not have any books.
+  /books/liked:
+    get:
+      summary: Get user's liked books
+      description: Get all liked books from logged user
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success. Returns a list of all liked books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBookResponse'
+        '404':
+          description: Not found. This user not have books.
+  /books/title/{title}:
+    get:
+      summary: Get books by title
+      description: Get books filtered by title
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: title
+          required: true
+          schema:
+            type: string
+          description: The title to filter books
+      responses:
+        '200':
+          description: Success. Returns a list of filtered books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBookResponse'
+        '404':
+          description: Not found. Not have books with this title.
+  /books/{id}:
+    get:
+      summary: Get one book
+      description: Get book by id
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The book ID
+      responses:
+        '200':
+          description: Success. Returns the book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBookByIdResponse'
+        '404':
+          description: Not found. Book not found.
+    delete:
+      summary: Delete book
+      description: Delete book by id
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The book ID
+      responses:
+        '200':
+          description: Success. Returns the deleted book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteBookByIdResponse'
+        '404':
+          description: Not found. Book not found.
+        '401':
+          description: Unauthorized. This user not have permission of delete this book.
+    patch:
+      summary: Update book
+      description: Update book by id
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The book ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookByIdBody'
+      responses:
+        '200':
+          description: Success. Returns the updated book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateBookByIdResponse'
+        '404':
+          description: Not found. Book not exist.
+        '401':
+          description: Unauthorized. This user not have permission of delete this book.
+  /books:
+    post:
+      summary: Create book
+      description: Route to publish a book
+      tags:
+        - books
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBookByIdBody'
+      responses:
+        '200':
+          description: Success. Returns the created book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateBookResponse'
+        '400':
+          description: Bad Request. An error ocurred when create a book.
 definitions:
   User:
     type: object
@@ -383,13 +553,15 @@ definitions:
       userId:
         type: string
       title:
-        type: array
+        type: string
       authors:
-        type: string
-        items: string
+        type: array
+        items:
+          type: string
       categories:
-        type: string
-        items: string
+        type: array
+        items:
+          type: string
       publisher:
         type: string
       publishedDate:
@@ -564,7 +736,6 @@ components:
       $ref: '#/definitions/User'
     UpdateUserBody:
       type: object
-      required:
       properties:
         name:
           type: string
@@ -592,3 +763,82 @@ components:
           $ref: '#/definitions/BookWithUserAndLike'
         totalItems:
           type: integer
+    GetBookByIdResponse:
+      type: object
+      $ref: '#/definitions/Book'
+    DeleteBookByIdResponse:
+      type: object
+      $ref: '#/definitions/Book'
+    UpdateBookByIdBody:
+      type: object
+      properties:
+        title:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+        categories:
+          type: array
+          items:
+            type: string
+        publisher:
+          type: string
+        publishedDate:
+          type: string
+        description:
+          type: string
+        pageCount:
+          type: integer
+        imageUrl:
+          type: string
+        imageName:
+          type: string
+        language:
+          type: string
+        previewLink:
+          type: string
+    UpdateBookByIdResponse:
+      type: object
+      $ref: '#/definitions/Book'
+    CreateBookBody:
+      type: object
+      required:
+        - title
+        - authors
+        - publisher
+        - publishedDate
+        - description
+        - pageCount
+        - categories
+        - language
+      properties:
+        title:
+          type: string
+        authors:
+          type: array
+          items:
+            type: string
+        categories:
+          type: array
+          items:
+            type: string
+        publisher:
+          type: string
+        publishedDate:
+          type: string
+        description:
+          type: string
+        pageCount:
+          type: integer
+        imageUrl:
+          type: string
+        imageName:
+          type: string
+        language:
+          type: string
+        previewLink:
+          type: string
+    CreateBookResponse:
+      type: object
+      $ref: '#/definitions/Book'

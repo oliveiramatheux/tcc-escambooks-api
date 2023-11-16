@@ -14,6 +14,7 @@ const router = Router()
 
 router.get(
   '/:id',
+  verifyToken,
   validateParamsGetUserById,
   usersController.getUserByIdController
 )
@@ -22,6 +23,7 @@ router.post('/', validateParamsCreateUser, usersController.createUserController)
 
 router.delete(
   '/:id',
+  verifyToken,
   validateParamsDeleteUserById,
   usersController.deleteUserByIdController
 )
