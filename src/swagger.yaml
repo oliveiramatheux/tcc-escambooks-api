@@ -21,6 +21,8 @@ tags:
     description: All related to books
   - name: likes
     description: All related to likes
+  - name: match
+    description: All related to match
   - name: admin
     description: Routes for admins
 paths:
@@ -690,6 +692,64 @@ paths:
                 $ref: '#/components/schemas/DeleteLikesByBookIdResponse'
         '404':
           description: Not Found. Like not found.
+  /match:
+    get:
+      summary: Get matches
+      description: Get matches from logged user
+      tags:
+        - match
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success. Returns the list of matches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMatchResponse'
+        '404':
+          description: Not Found. This user not have matches.
+  /match/{id}:
+    get:
+      summary: Get match by id
+      description: Get match details
+      tags:
+        - match
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Success. Returns the detailed match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMatchByIdResponse'
+        '404':
+          description: Not Found. Match not found.
+    patch:
+      summary: Update match by id
+      description: Update match by id
+      tags:
+        - match
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMatchByIdBody'
+      responses:
+        '200':
+          description: Success. Returns the updated match
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMatchByIdResponse'
+        '400':
+          description: Bad Request. An error occured when update this match
+        '404':
+          description: Not Found. Match not found.
 definitions:
   User:
     type: object
@@ -793,6 +853,36 @@ definitions:
         type: string
       userLikedName:
         type: string
+      isVisualized:
+        type: boolean
+      date:
+        type: string
+  Match:
+    type: object
+    properties:
+      id:
+        type: string
+      books:
+        type: array
+        items:
+          type: string
+      users:
+        type: array
+        items:
+          type: object
+          properties:
+            userId:
+              type: string
+            isVisualized:
+              type: boolean
+      likes:
+        type: array
+        items:
+          type: string
+      usersConfirmed:
+        type: array
+        items:
+          type: string
       isVisualized:
         type: boolean
       date:
@@ -1096,3 +1186,52 @@ components:
     CreateLikeResponse:
       type: object
       $ref: '#/definitions/Like'
+    PaginatedMatchResponse:
+      type: object
+      properties:
+        items:
+          $ref: '#/definitions/Match'
+        totalItems:
+          type: integer
+        totalItemsNotVisualized:
+          type: integer
+    GetMatchByIdResponse:
+      type: object
+      properties:
+        match:
+          $ref: '#/definitions/Match'
+        currentUser:
+          $ref: '#/definitions/User'
+        otherUser:
+          $ref: '#/definitions/User'
+        currentUserBook:
+          $ref: '#/definitions/Book'
+        otherUserBook:
+          $ref: '#/definitions/Book'
+    UpdateMatchByIdBody:
+      type: object
+      properties:
+        books:
+          type: array
+          items:
+            type: string
+        users:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+              isVisualized:
+                type: boolean
+        likes:
+          type: array
+          items:
+            type: string
+        usersConfirmed:
+          type: array
+          items:
+            type: string
+    UpdateMatchByIdResponse:
+      type: object
+      $ref: '#/definitions/Match'
